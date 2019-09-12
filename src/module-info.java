@@ -6,4 +6,5 @@
  *
  */
 module KenKen {
+	requires java.desktop;
 }
