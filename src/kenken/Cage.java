@@ -1,13 +1,13 @@
 package kenken;
 
 import java.util.ArrayList;
-import java.awt.Point;
+import java.awt.geom.Point2D;
 
 public class Cage {
 
 	public int total;
 	public String op;
-	public ArrayList<Point>locales = new ArrayList<Point>(81);
+	public ArrayList<Point2D>locales = new ArrayList<Point2D>(15);
 	
 	public Cage() {
 		
@@ -30,6 +30,13 @@ public class Cage {
 	public void setOp(String y) {
 		
 		op = y;
+		
+	}
+
+	public void setPoint(int i, int j) {
+		Point2D e=null; 
+		e.setLocation(i, i);
+		locales.add(e);
 		
 	}
 
