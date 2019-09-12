@@ -1,3 +1,18 @@
+/* This class creates the following: 
+ * -> One hashtable that holds key:Letter (A,B,C,D,etc) & cage objects that contain Total (ie 120,6,240), 
+ *    Operator (*,x,/,+,-) and grouping points [(0,0),(0,1),(0,2)] 
+ *    {This hashtable is used to associate the cages with all the points to the Total and operator}
+ * 
+ * -> One hashMap that holds Point (i,j) as the key & value:Letter for reference.  We used a hashMap because it accepts NULL values. 
+ *    {used to pull the corresponding letter when you only know the Point} 
+ * 
+ * -> An individual cage or group of points is called eachCage.  It's an object created in the cage class.
+ *    It consist of a Numerical Total (total), opeartor (op), and an ArrayList of Point2D Coordinates (locales)
+ * 
+ * 
+ * 
+ */
+
 package kenken;
 
 import java.awt.geom.Point2D;
@@ -6,102 +21,110 @@ import java.io.File;
 import java.util.Scanner;
 
 import java.io.FileNotFoundException;
-
+import java.util.HashMap;
 import java.util.Hashtable;
 
 public class InputFile {
 	
 	File text;
-	int n;
-	String [][] boardNumbers;
-	Point2D e;
+	
+	int n; // the size of the rows, columns and domain
+	
+	String [][] boardNumbers;  // this creates the matrix n x n
+	
+	Point2D e;  // the (i,j) coordinate
 	
 	
-	
+	// constructor that reads the file and creates the board and fills in the object
 	public InputFile(String file) throws FileNotFoundException {
 		
+		text = new File("datainput.txt");  // import text file into variable
 		
-		text = new File("datainput.txt");
+		Scanner scnr = new Scanner(text);  // scan text into scnr object
 		
+		int lineNumber = 0;  // starting line number
 		
-		Scanner scnr = new Scanner(text);
+		int i = 0;  // starting row number
 		
-		int lineNumber = 0;
-		int i = 0;
-		int j = 0;
+		int j = 0;  // starting column number
 
-		int lineLength;
+		int lineLength;  // measures the length of row for constraint input
+		
+		Hashtable<String,Cage> cages = new Hashtable<String,Cage>();  //hashtable which captures the letter in position one and an object in the second position  
+		
+		HashMap<Point2D,String> cageLookup = new HashMap<Point2D,String>();  // Need a Cage by point lookup table
+		
+		Cage eachCage = new Cage();  // This is one group of cells that have a common constraint
 		
 		
-		Hashtable<String,Cage> cages = new Hashtable<String,Cage>();
-		
-		Cage eachCage = new Cage();
-		
-		
-		while (scnr.hasNextLine()) {
+		do { // using do since it has to run atleast one time
 			
-			String line = scnr.nextLine();
+			String line = scnr.nextLine();  //looks for next line
 			
-			if(lineNumber == 0) n = Integer.parseInt(line); makeArray(n);
+			if(lineNumber == 0) n = Integer.parseInt(line); makeArray(n); //reads the first value and sets to N & creates Array
 			
-			if(lineNumber >0 && lineNumber < n) {
+			if(lineNumber >0 && lineNumber <= n) { //must be between line 1 and line n to be the board
 				
-					for(;j<=n;j++) {
+					for(;j<=n;j++) { //loop through the cols for each row
 						
-						boardNumbers[i][j] = line.substring(j, j+1);
-						
-						//if [i][j] is in Hashtable, skip, if not add it as a key and null value
-						
-						if(!cages.containsKey(boardNumbers[i][j])){
+						boardNumbers[i][j] = line.substring(j, j+1);  // grabs the individual cell and assigns it 
 							
-							eachCage.setPoint(i, j);
+						e.setLocation(i, j);  // create point - might be redundant but using for now
+						
+						cageLookup.put(e,boardNumbers[i][j]); //put the point (i,j) as key and cage Name (ie A, B, C) as value
 							
-							cages.put(boardNumbers[i][j], eachCage);
+						if(!cages.containsKey(boardNumbers[i][j])){  // if [i][j] is not in hashtable then set point to particular cage
+						
+							eachCage.setPoint(i, j);	// set (i,j) into the obect's locale
+							
+							cages.put(boardNumbers[i][j], eachCage);  // put (i,j)'s value=key (ie A, B,C) & put eachCage as value into hashtable
 							
 						} else {
 							
-							eachCage = cages.get(boardNumbers[i][j]);
+							eachCage = cages.get(boardNumbers[i][j]);  // grabs individual cage by key value in boardNumbers[i][j]
 							
-							e.setLocation(i,j);
+							e.setLocation(i,j); // sets variable equal to the point (i,j)
 							
-							eachCage.locales.add(e);
+							eachCage.locales.add(e);  // adds new point (i,j) into the locale ArrayList of existing points
 							
-							cages.replace(boardNumbers[i][j], eachCage);
+							cages.replace(boardNumbers[i][j], eachCage); // replaces old cage with new cage using key (A,B,C)
 							
 						}
 						
 					}
 				
-					i =+ 1;
+					i++;  // sets i for the next row
 					
 				}
 			
-			if( lineNumber >= n) {
+			if( lineNumber > n) {  // when line n+1 is reached, the data changes
 			
-				lineLength = line.length();
+				lineLength = line.length(); // need to check the line length to know where to find the operator
 				
-				eachCage.setOp(line.substring(lineLength-1));
+				eachCage.setOp(line.substring(lineLength-1)); // finds the operator
 				
-				eachCage.setTotal(Integer.parseInt(line.substring(3,lineLength-2)));
+				eachCage.setTotal(Integer.parseInt(line.substring(2,lineLength-2))); // finds the total value
 				
-				cages.putIfAbsent(line.substring(0,1), eachCage);
+				cages.putIfAbsent(line.substring(0,1), eachCage); // inserts eachCage into hashtable(cages) if its not there
 				
 				
 					
 			}
 			
-			lineNumber =+ 1;
+			
+			lineNumber++;  // increases the line number by 1 
 			
 			
-			}
+			} while(scnr.hasNextLine()); // ends when scnr has no more lines left
 			
 			
-		}
+		}  // end of constructor
 	
 	
-	public String[][] makeArray(int n){
+	
+	private String[][] makeArray(int n){ //makes the n ArrayList by initializing ArrayList with n
 		
-		boardNumbers = new String[n][n];
+		boardNumbers = new String[n][n];  // this will be characters like A,B,C,$,&
 		
 		return boardNumbers;
 	}
