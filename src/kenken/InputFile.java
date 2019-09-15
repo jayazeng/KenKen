@@ -9,7 +9,8 @@
  * -> An individual cage or group of points is called eachCage.  It's an object created in the cage class.
  *    It consist of a Numerical Total (total), opeartor (op), and an ArrayList of Point2D Coordinates (locales)
  * 
- * 
+ * -> Also need to create a count of how many cage letters were present on the inputed board.  Anotherwords
+ *    how many A or B or C points are respectively needed to complete the cage.
  * 
  */
 
@@ -28,19 +29,26 @@ public class InputFile {
 	
 	File text;
 	
+	Scanner scnr;
+	
 	int n; // the size of the rows, columns and domain
 	
 	String [][] boardNumbers;  // this creates the matrix n x n
 	
 	Point2D e;  // the (i,j) coordinate
 	
+	Hashtable<String,Cage> cages;
+	
+	HashMap<Point2D,String> cageLookup;
+	
+	Cage eachCage;
 	
 	// constructor that reads the file and creates the board and fills in the object
 	public InputFile(String file) throws FileNotFoundException {
 		
-		text = new File("datainput.txt");  // import text file into variable
+		text = new File(file);  // import text file into variable
 		
-		Scanner scnr = new Scanner(text);  // scan text into scnr object
+		//scnr = new Scanner(new BufferedReader(new FileReader(text)));  // scan text into scnr object
 		
 		int lineNumber = 0;  // starting line number
 		
@@ -50,11 +58,11 @@ public class InputFile {
 
 		int lineLength;  // measures the length of row for constraint input
 		
-		Hashtable<String,Cage> cages = new Hashtable<String,Cage>();  //hashtable which captures the letter in position one and an object in the second position  
+		cages = new Hashtable<String,Cage>();  //hashtable which captures the letter in position one and an object in the second position  
 		
-		HashMap<Point2D,String> cageLookup = new HashMap<Point2D,String>();  // Need a Cage by point lookup table
+		cageLookup = new HashMap<Point2D,String>();  // Need a Cage by point lookup table
 		
-		Cage eachCage = new Cage();  // This is one group of cells that have a common constraint
+		eachCage = new Cage();  // This is one group of cells that have a common constraint
 		
 		
 		do { // using do since it has to run atleast one time

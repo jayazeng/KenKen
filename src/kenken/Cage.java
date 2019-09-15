@@ -15,6 +15,7 @@ public class Cage {
 	public String op;  // operator needed to make total
 	public ArrayList<Point2D>locales = new ArrayList<Point2D>(15); // ArrayList which holds Point2D for cage
 	public Point2D e;
+	public int size = 0;
 	
 	public Cage() { //no default value as of yet
 		
@@ -50,6 +51,8 @@ public class Cage {
 		
 		locales.add(e);
 		
+		size++;
+		
 	}
 
 	public ArrayList<Point2D> getPoint() { // getter for Point (locales)
@@ -57,6 +60,7 @@ public class Cage {
 		return locales;
 		
 	}
+	
 	
 	
 }
