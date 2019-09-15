@@ -18,10 +18,9 @@ package kenken;
 
 import java.awt.geom.Point2D;
 import java.io.File;
-
+import java.io.IOException;
 import java.util.Scanner;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Hashtable;
 
@@ -44,87 +43,100 @@ public class InputFile {
 	Cage eachCage;
 	
 	// constructor that reads the file and creates the board and fills in the object
-	public InputFile(String file) throws FileNotFoundException {
+	public InputFile(String file) {
 		
-		text = new File(file);  // import text file into variable
 		
-		//scnr = new Scanner(new BufferedReader(new FileReader(text)));  // scan text into scnr object
-		
-		int lineNumber = 0;  // starting line number
-		
-		int i = 0;  // starting row number
-		
-		int j = 0;  // starting column number
+		try {
+			
+			ReadDataFile dFile = new ReadDataFile(file);
+			String[] textLines = dFile.OpenFile();
 
-		int lineLength;  // measures the length of row for constraint input
 		
-		cages = new Hashtable<String,Cage>();  //hashtable which captures the letter in position one and an object in the second position  
-		
-		cageLookup = new HashMap<Point2D,String>();  // Need a Cage by point lookup table
-		
-		eachCage = new Cage();  // This is one group of cells that have a common constraint
-		
-		
-		do { // using do since it has to run atleast one time
+			int lineNumber = 0;  // starting line number
 			
-			String line = scnr.nextLine();  //looks for next line
+			int i = 0;  // starting row number
 			
-			if(lineNumber == 0) n = Integer.parseInt(line); makeArray(n); //reads the first value and sets to N & creates Array
+			int j = 0;  // starting column number
+	
+			int lineLength;  // measures the length of row for constraint input
 			
-			if(lineNumber >0 && lineNumber <= n) { //must be between line 1 and line n to be the board
+			cages = new Hashtable<String,Cage>();  //hashtable which captures the letter in position one and an object in the second position  
+			
+			cageLookup = new HashMap<Point2D,String>();  // Need a Cage by point lookup table
+			
+			eachCage = new Cage();  // This is one group of cells that have a common constraint
+		
+		
+			do { // using do since it has to run atleast one time
 				
-					for(;j<=n;j++) { //loop through the cols for each row
-						
-						boardNumbers[i][j] = line.substring(j, j+1);  // grabs the individual cell and assigns it 
+				String line = textLines[i];  //looks for i line
+				
+				if(lineNumber == 0) n = Integer.parseInt(line); makeArray(n); //reads the first value and sets to N & creates Array
+				
+				if(lineNumber >0 && lineNumber <= n) { //must be between line 1 and line n to be the board
+					
+						for(;j<=n;j++) { //loop through the cols for each row
 							
-						e.setLocation(i, j);  // create point - might be redundant but using for now
-						
-						cageLookup.put(e,boardNumbers[i][j]); //put the point (i,j) as key and cage Name (ie A, B, C) as value
+							boardNumbers[i][j] = line.substring(j, j+1);  // grabs the individual cell and assigns it 
+								
+							e.setLocation(i, j);  // create point - might be redundant but using for now
 							
-						if(!cages.containsKey(boardNumbers[i][j])){  // if [i][j] is not in hashtable then set point to particular cage
-						
-							eachCage.setPoint(i, j);	// set (i,j) into the obect's locale
+							cageLookup.put(e,boardNumbers[i][j]); //put the point (i,j) as key and cage Name (ie A, B, C) as value
+								
+							if(!cages.containsKey(boardNumbers[i][j])){  // if [i][j] is not in hashtable then set point to particular cage
 							
-							cages.put(boardNumbers[i][j], eachCage);  // put (i,j)'s value=key (ie A, B,C) & put eachCage as value into hashtable
-							
-						} else {
-							
-							eachCage = cages.get(boardNumbers[i][j]);  // grabs individual cage by key value in boardNumbers[i][j]
-							
-							e.setLocation(i,j); // sets variable equal to the point (i,j)
-							
-							eachCage.locales.add(e);  // adds new point (i,j) into the locale ArrayList of existing points
-							
-							cages.replace(boardNumbers[i][j], eachCage); // replaces old cage with new cage using key (A,B,C)
+								eachCage.setPoint(i, j);	// set (i,j) into the obect's locale
+								
+								cages.put(boardNumbers[i][j], eachCage);  // put (i,j)'s value=key (ie A, B,C) & put eachCage as value into hashtable
+								
+							} else {
+								
+								eachCage = cages.get(boardNumbers[i][j]);  // grabs individual cage by key value in boardNumbers[i][j]
+								
+								e.setLocation(i,j); // sets variable equal to the point (i,j)
+								
+								eachCage.locales.add(e);  // adds new point (i,j) into the locale ArrayList of existing points
+								
+								cages.replace(boardNumbers[i][j], eachCage); // replaces old cage with new cage using key (A,B,C)
+								
+							}
 							
 						}
+					
+						i++;  // sets i for the next row
 						
 					}
 				
-					i++;  // sets i for the next row
+				if( lineNumber > n) {  // when line n+1 is reached, the data changes
+				
+					lineLength = line.length(); // need to check the line length to know where to find the operator
 					
+					eachCage.setOp(line.substring(lineLength-1)); // finds the operator
+					
+					eachCage.setTotal(Integer.parseInt(line.substring(2,lineLength-2))); // finds the total value
+					
+					cages.putIfAbsent(line.substring(0,1), eachCage); // inserts eachCage into hashtable(cages) if its not there
+					
+					
+						
 				}
-			
-			if( lineNumber > n) {  // when line n+1 is reached, the data changes
-			
-				lineLength = line.length(); // need to check the line length to know where to find the operator
-				
-				eachCage.setOp(line.substring(lineLength-1)); // finds the operator
-				
-				eachCage.setTotal(Integer.parseInt(line.substring(2,lineLength-2))); // finds the total value
-				
-				cages.putIfAbsent(line.substring(0,1), eachCage); // inserts eachCage into hashtable(cages) if its not there
 				
 				
-					
-			}
+				lineNumber++;  // increases the line number by 1 
+				
+				
+				} while(textLines[i]==null); // ends when scnr has no more lines left
+		
+			System.out.print("Stop Here");
 			
+			System.out.print("Done");
+		}
+		
+		catch (IOException e) {
 			
-			lineNumber++;  // increases the line number by 1 
+			System.out.println(e.getMessage());
 			
-			
-			} while(scnr.hasNextLine()); // ends when scnr has no more lines left
-			
+		}			
 			
 		}  // end of constructor
 	

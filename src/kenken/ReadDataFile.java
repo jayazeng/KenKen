@@ -67,26 +67,8 @@ public class ReadDataFile {
 		
 		String data_file = "./src/kenken.txt";
 		
+		InputFile game = new InputFile(data_file);
 		
-		
-		try {
-			
-			ReadDataFile dFile = new ReadDataFile(data_file);
-			String[] textLines = dFile.OpenFile();
-			
-			int i;
-			for(i=0; i < textLines.length; i++) {
-				
-				System.out.println(textLines[i]);
-				
-			}
-			
-		}
-		catch (IOException e) {
-			
-			System.out.println(e.getMessage());
-			
-		}
 	}
 	
 }
