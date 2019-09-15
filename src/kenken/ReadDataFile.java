@@ -9,31 +9,29 @@
 package kenken;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Scanner;
 
-public class ReadFile {
+public class ReadDataFile {
 
-	private String path;
+	private String dataPath;
 	
-	public ReadFile(String file_path) {
-		path=file_path;
+	public ReadDataFile(String dataFilePath) {
+		dataPath=dataFilePath;
 	}
 		
 	public String[] OpenFile() throws IOException{
 		
-		FileReader fr = new FileReader(path);
+		FileReader fr = new FileReader(dataPath);
 		
 		BufferedReader textReader = new BufferedReader(fr);
 		
-		int numberOfLines = readLines();
-		String[] textData = new String[numberOfLines];
+		int numOfLines = readLines();
+		String[] textData = new String[numOfLines];
 		
 		int i;
 		
-		for(i=0; i<numberOfLines; i++) {
+		for(i=0; i<numOfLines; i++) {
 			textData[i] = textReader.readLine();
 		}
 		
@@ -45,21 +43,21 @@ public class ReadFile {
 		
 	int readLines() throws IOException{
 		
-		FileReader file_to_read = new FileReader(path);
-		BufferedReader bf = new BufferedReader(file_to_read);
+		FileReader file_to_read = new FileReader(dataPath);
+		BufferedReader buffFile = new BufferedReader(file_to_read);
 		
-		String aLine;
-		int numberOfLines = 0;
+		String dataFileLine;
+		int numOfLines = 0;
 		
-		while ((aLine = bf.readLine()) != null) {
+		while ((dataFileLine = buffFile.readLine()) != null) {
 			
-			numberOfLines++;
+			numOfLines++;
 			
 		}
 		
-		bf.close();
+		buffFile.close();
 		
-		return numberOfLines;
+		return numOfLines;
 	}
 
 
@@ -67,20 +65,19 @@ public class ReadFile {
 
 	public static void main(String[] args) throws IOException {
 		
-		String file_name = "./src/kenken.txt";
+		String data_file = "./src/kenken.txt";
 		
-		System.out.print("Hello Cedric");
 		
 		
 		try {
 			
-			ReadFile file = new ReadFile(file_name);
-			String[] aryLines = file.OpenFile();
+			ReadDataFile dFile = new ReadDataFile(data_file);
+			String[] textLines = dFile.OpenFile();
 			
 			int i;
-			for(i=0; i < aryLines.length; i++) {
+			for(i=0; i < textLines.length; i++) {
 				
-				System.out.print(aryLines[i]);
+				System.out.println(textLines[i]);
 				
 			}
 			
