@@ -2,7 +2,7 @@ package kenken;
 
 import java.awt.geom.Point2D;
 
-public class BackTrack {
+public class SimpleBackTrack {
 	private int[][] finalSolution; //2d int array to hold the solution
 	int n; // length and width of array
 	private boolean completed;
@@ -10,7 +10,7 @@ public class BackTrack {
 	private InputFile input; // inputfile that will have all the data
 	private Point2D p; //place holder point that's only used to access values
 
-	public BackTrack(InputFile file) {
+	public SimpleBackTrack(InputFile file) {
 		completed = false;
 		iterations = 0;
 		input = file;
