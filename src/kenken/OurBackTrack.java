@@ -16,7 +16,43 @@ public class OurBackTrack {
 		input = file;
 		n = file.n;
 	}
-
+	// this method should put possible values into each cell
+	private boolean[] possibilities(Cage c) {
+		boolean[] possible = new boolean[n+1];
+		int total = c.getTotal();
+		String op = c.getOp();
+		for (int value = 1; value <= n; value++) {
+			if (op.equals("*")) {
+				if(total % value == 0){ // this will mean the total is divisible by the possible value
+					possible[value] = true;
+				} else {
+					possible[value] = false;
+				}
+			} else if (op.equals("+")) {
+				if (total - value > 0) {
+					possible[value] = true;
+				} else {
+					possible[value] = false;
+				}
+			} else if (op.equals("-")) {
+				if (total + value <= n) {
+					possible[value] = true;
+				} else {
+					possible[value] = false;
+				}
+			} else if (op.equals("/")) {
+				if (total*value <= n) {
+					possible[value] = true;
+				} else {
+					possible[value] = false;
+				}
+			}
+		}
+		return possible;
+	}
+	
+	
+	
 	// backtrack method
 	public boolean backtrack(InputFile input) {
 		if (completed) {
