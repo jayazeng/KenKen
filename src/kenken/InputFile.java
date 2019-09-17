@@ -54,7 +54,9 @@ public class InputFile {
 			e = new Point2D.Double();
 			int lineNumber = 0;  // starting line number
 			
-			int i = 0;  // starting row number
+			int h = 0;
+			
+			int i = -1;  // starting row number
 			
 			int j = 0;  // starting column number
 	
@@ -69,8 +71,8 @@ public class InputFile {
 		
 			do { // using do since it has to run atleast one time
 				
-				String line = textLines[i];  //looks for i line
-				
+				String line = textLines[h];  //looks for i line
+				j=0;
 				if(lineNumber == 0) { //reads the first value and sets to N & creates Array
 					n = Integer.parseInt(line); 
 					makeArray(n); 
@@ -122,11 +124,12 @@ public class InputFile {
 						
 				}
 				
+				h++;
 				i++;  // sets i for the next row
 				lineNumber++;  // increases the line number by 1 
 				
 				
-				} while(i < textLines.length); // ends when scnr has no more lines left
+				} while(h < textLines.length); // ends when scnr has no more lines left
 		
 			System.out.print("Stop Here");
 			
