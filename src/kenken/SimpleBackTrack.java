@@ -1,6 +1,7 @@
 package kenken;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 
 public class SimpleBackTrack {
 	private int[][] finalSolution; //2d int array to hold the solution
@@ -16,6 +17,7 @@ public class SimpleBackTrack {
 		input = file;
 		n = file.n;
 		finalSolution = new int[n][n];
+		p = new Point2D.Double();
 	}
 
 	// backtrack method

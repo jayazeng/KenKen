@@ -51,7 +51,7 @@ public class InputFile {
 			ReadDataFile dFile = new ReadDataFile(file);
 			String[] textLines = dFile.OpenFile();
 
-		
+			e = new Point2D.Double();
 			int lineNumber = 0;  // starting line number
 			
 			int i = 0;  // starting row number
@@ -65,17 +65,18 @@ public class InputFile {
 			cageLookup = new HashMap<Point2D,String>();  // Need a Cage by point lookup table
 			
 			eachCage = new Cage();  // This is one group of cells that have a common constraint
-		
+	
 		
 			do { // using do since it has to run atleast one time
 				
 				String line = textLines[i];  //looks for i line
 				
-				if(lineNumber == 0) n = Integer.parseInt(line); makeArray(n); //reads the first value and sets to N & creates Array
-				
-				if(lineNumber >0 && lineNumber <= n) { //must be between line 1 and line n to be the board
+				if(lineNumber == 0) { //reads the first value and sets to N & creates Array
+					n = Integer.parseInt(line); 
+					makeArray(n); 
+				} else if(lineNumber <= n) { //must be between line 1 and line n to be the board
 					
-						for(;j<=n;j++) { //loop through the cols for each row
+						for(;j<n;j++) { //loop through the cols for each row
 							
 							boardNumbers[i][j] = line.substring(j, j+1);  // grabs the individual cell and assigns it 
 								
@@ -103,17 +104,17 @@ public class InputFile {
 							
 						}
 					
-						i++;  // sets i for the next row
+						
 						
 					}
 				
-				if( lineNumber > n) {  // when line n+1 is reached, the data changes
+				else if( lineNumber > n) {  // when line n+1 is reached, the data changes
 				
 					lineLength = line.length(); // need to check the line length to know where to find the operator
 					
 					eachCage.setOp(line.substring(lineLength-1)); // finds the operator
-					
-					eachCage.setTotal(Integer.parseInt(line.substring(2,lineLength-2))); // finds the total value
+					//String what = line.substring(2,lineLength-1);
+					eachCage.setTotal(Integer.parseInt(line.substring(2,lineLength-1))); // finds the total value
 					
 					cages.putIfAbsent(line.substring(0,1), eachCage); // inserts eachCage into hashtable(cages) if its not there
 					
@@ -121,11 +122,11 @@ public class InputFile {
 						
 				}
 				
-				
+				i++;  // sets i for the next row
 				lineNumber++;  // increases the line number by 1 
 				
 				
-				} while(textLines[i]==null); // ends when scnr has no more lines left
+				} while(i < textLines.length); // ends when scnr has no more lines left
 		
 			System.out.print("Stop Here");
 			

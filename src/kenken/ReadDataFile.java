@@ -69,6 +69,14 @@ public class ReadDataFile {
 		
 		InputFile game = new InputFile(data_file);
 		
+		SimpleBackTrack sol = new SimpleBackTrack(game);
+		
+		if (sol.backtrack()) {
+			sol.printSolution();
+		} else {
+			System.out.println("No solution");
+		}
+		
 	}
 	
 }

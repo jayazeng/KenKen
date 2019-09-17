@@ -18,7 +18,7 @@ public class Cage {
 	public int size = 0;
 	
 	public Cage() { //no default value as of yet
-		
+		e = new Point2D.Double();
 	}
 	
 	public int getTotal() { // getter for total
