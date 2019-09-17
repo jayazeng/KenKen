@@ -1,6 +1,7 @@
 package kenken;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 public class OurBackTrack {
 	private Cell[][] finalSolution; //2d Cell array to hold the solution
@@ -15,36 +16,29 @@ public class OurBackTrack {
 		iterations = 0;
 		input = file;
 		n = file.n;
+		finalSolution = new Cell[n][n];
 	}
 	// this method should put possible values into each cell
-	private boolean[] possibilities(Cage c) {
-		boolean[] possible = new boolean[n+1];
+	private ArrayList<Integer> possibilities(Cage c) {
+		ArrayList<Integer> possible = new ArrayList<Integer>(n);
 		int total = c.getTotal();
 		String op = c.getOp();
 		for (int value = 1; value <= n; value++) {
 			if (op.equals("*")) {
 				if(total % value == 0){ // this will mean the total is divisible by the possible value
-					possible[value] = true;
-				} else {
-					possible[value] = false;
+					possible.add(value);
 				}
 			} else if (op.equals("+")) {
-				if (total - value > 0) {
-					possible[value] = true;
-				} else {
-					possible[value] = false;
+				if (total - value > 0) { // this will mean that subtracting the possible value from the total will be greater than 0
+					possible.add(value); 
 				}
-			} else if (op.equals("-")) {
+			} else if (op.equals("-")) {// this will mean that adding the possible value to the total will be less than or equal to n
 				if (total + value <= n) {
-					possible[value] = true;
-				} else {
-					possible[value] = false;
+					possible.add(value); 
 				}
-			} else if (op.equals("/")) {
+			} else if (op.equals("/")) {// this will mean that multiplying the possible value to the total will be less than or equal to n
 				if (total*value <= n) {
-					possible[value] = true;
-				} else {
-					possible[value] = false;
+					possible.add(value); 
 				}
 			}
 		}
@@ -54,23 +48,27 @@ public class OurBackTrack {
 	
 	
 	// backtrack method
-	public boolean backtrack(InputFile input) {
+	public boolean backtrack() {
 		if (completed) {
 			return true;
 		}
 		for (int x = 0; x < n; x++) {
 			int testValue = 1; // test value that will be incremented if it doesn't meet constraints
 			for (int y = 0; y < n; y++) {
-				iterations = getIterations() + 1; // updates number of nodes
-				if (checkConstraints(testValue, x, y)) { // will only update solution if constraints are made
-					finalSolution[x][y].setValue(testValue);
-					if (x == n-1 && y == n-1) { // if at the end of the solution array, you've found it all
-						completed = true;
+				p.setLocation(x, y);
+				//get cage
+				//String lookup = input.cageLookup.get(p);
+				Cage cage = input.cages.get(input.cageLookup.get(p));
+				ArrayList<Integer> testValues = possibilities(cage);
+				iterations++; // updates number of nodes
+				for (int i = 0; i < testValues.size(); i++) {
+					if (checkConstraints(testValues.get(i), x, y)) { // will only update solution if constraints are made
+						finalSolution[x][y].setValue(testValue);
+						if (x == n-1 && y == n-1) { // if at the end of the solution array, you've found it all
+							completed = true;
+						}
+						return true;
 					}
-					return true;
-				} else {
-					testValue++; // check with another test value
-					checkConstraints(testValue,x,y);
 				}
 			}
 			
@@ -78,10 +76,10 @@ public class OurBackTrack {
 		return false;
 	}
 
-	public void printSolution(int[][] solution) { //print solution in matrix form (tentatively)
-		for (int x =0; x < solution.length; x++) {
-			for (int y =0; y < solution.length; y++) {
-				System.out.print(finalSolution[x][y]+" ");
+	public void printSolution() { //print solution in matrix form (tentatively)
+		for (int x =0; x < n; x++) {
+			for (int y =0; y < n; y++) {
+				System.out.print(finalSolution[x][y].getValue() +" ");
 			}
 			System.out.println();
 		}

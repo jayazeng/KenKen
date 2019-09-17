@@ -15,17 +15,18 @@ public class SimpleBackTrack {
 		iterations = 0;
 		input = file;
 		n = file.n;
+		finalSolution = new int[n][n];
 	}
 
 	// backtrack method
-	public boolean backtrack(InputFile input) {
+	public boolean backtrack() {
 		if (completed) {
 			return true;
 		}
 		for (int x = 0; x < n; x++) {
 			int testValue = 1; // test value that will be incremented if it doesn't meet constraints
 			for (int y = 0; y < n; y++) {
-				iterations = getIterations() + 1; // updates number of nodes
+				iterations++; // updates number of nodes
 				if (checkConstraints(testValue, x, y)) { // will only update solution if constraints are made
 					finalSolution[x][y] = testValue;
 					if (x == n-1 && y == n-1) { // if at the end of the solution array, you've found it all
@@ -42,9 +43,9 @@ public class SimpleBackTrack {
 		return false;
 	}
 
-	public void printSolution(int[][] solution) { //print solution in matrix form (tentatively)
-		for (int x =0; x < solution.length; x++) {
-			for (int y =0; y < solution.length; y++) {
+	public void printSolution() { //print solution in matrix form (tentatively)
+		for (int x =0; x < n; x++) {
+			for (int y =0; y < n; y++) {
 				System.out.print(finalSolution[x][y]+" ");
 			}
 			System.out.println();
