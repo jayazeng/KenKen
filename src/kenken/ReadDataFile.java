@@ -17,6 +17,7 @@ public class ReadDataFile {
 	private String dataPath;
 	
 	public ReadDataFile(String dataFilePath) {
+		
 		dataPath=dataFilePath;
 	}
 		
@@ -32,6 +33,7 @@ public class ReadDataFile {
 		int i;
 		
 		for(i=0; i<numOfLines; i++) {
+			
 			textData[i] = textReader.readLine();
 		}
 		
@@ -47,6 +49,7 @@ public class ReadDataFile {
 		BufferedReader buffFile = new BufferedReader(file_to_read);
 		
 		String dataFileLine;
+		
 		int numOfLines = 0;
 		
 		while ((dataFileLine = buffFile.readLine()) != null) {

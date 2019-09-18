@@ -16,19 +16,13 @@
 
 package kenken;
 
-import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
-
-import java.util.HashMap;
 import java.util.Hashtable;
 
 public class InputFile {
 	
 	File text;
-	
-//	Scanner scnr;
 	
 	int n; // the size of the rows, columns and domain
 	
@@ -37,9 +31,7 @@ public class InputFile {
 	String e;  // the (i,j) coordinate
 	
 	Hashtable<String,Cage> cages;
-	
-//	HashMap<Point2D,String> cageLookup;
-	
+		
 	Hashtable<String,String> cageLookup;
 	
 	Cage eachCage;
@@ -47,16 +39,13 @@ public class InputFile {
 	// constructor that reads the file and creates the board and fills in the object
 	public InputFile(String file) {
 		
-		
 		try {
 			
 			ReadDataFile dFile = new ReadDataFile(file);
-			String[] textLines = dFile.OpenFile();
-
 			
+			String[] textLines = dFile.OpenFile();
 			
 			int lineNumber = 0;  // starting line number
-			
 			
 			int i = 0;  // starting row number
 			
@@ -65,35 +54,34 @@ public class InputFile {
 			int lineLength;  // measures the length of row for constraint input
 			
 			cages = new Hashtable<String,Cage>();  //hashtable which captures the letter in position one and an object in the second position  
-			
-//			cageLookup = new HashMap<Point2D,String>();  // Need a Cage by point lookup table
-			
+						
 			cageLookup = new Hashtable<String,String>();  // Need a Cage by point lookup table
 			
-			
-		
 			do { // using do since it has to run atleast one time
 				
-				String line = textLines[i];  //looks for i line
+				String line = textLines[i].trim();  //looks for i line
+				
 				j=0;
+				
 				if(lineNumber == 0) { //reads the first value and sets to N & creates Array
+					
 					n = Integer.parseInt(line); 
+					
 					makeArray(n); 
+				
 				} else if(lineNumber <= n) { //must be between line 1 and line n to be the board
 					
 						for(;j<n;j++) { //loop through the cols for each row
 							
 							e = ("("+(i-1)+","+j+")");  // create point - might be redundant but using for now
 							
-							this.eachCage = new Cage((i-1),j);  // This is one group of cells that have a common constraint
+							this.eachCage = new Cage();  // This is one group of cells that have a common constraint
 							
 							boardNumbers[i-1][j] = line.substring(j, j+1);  // grabs the individual cell and assigns it 
 								
 							this.cageLookup.put(("("+(i-1)+","+j+")"),boardNumbers[i-1][j]); //put the point (i,j) as key and cage Name (ie A, B, C) as value
 								
 							if(!cages.containsKey(boardNumbers[i-1][j])){  // if [i][j] is not in hashtable then set point to particular cage
-							
-//								e.setLocation(i-1, j);
 								
 								this.eachCage.locales.add("("+(i-1)+","+j+")");	// set (i,j) into the obect's locale
 								
@@ -102,46 +90,30 @@ public class InputFile {
 							} else {
 								
 								this.eachCage = this.cages.get(boardNumbers[i-1][j]);  // grabs individual cage by key value in boardNumbers[i][j]
-								
-//								e.setLocation(i-1,j); // sets variable equal to the point (i,j)
-								
+						
 								this.eachCage.locales.add("("+(i-1)+","+j+")");  // adds new point (i,j) into the locale ArrayList of existing points
 								
 								this.cages.replace(boardNumbers[i-1][j], this.eachCage); // replaces old cage with new cage using key (A,B,C)
 								
 							}
 							
-						}
-					
-						
+						}	
 						
 					}
 				
 				if( lineNumber > n) {  // when line n+1 is reached, the data changes
-				
-					lineLength = line.length(); // need to check the line length to know where to find the operator
 					
-					String op = (line.substring(lineLength-1)); // finds the operator
-					
-					int total = (Integer.parseInt(line.substring(2,lineLength-1))); // finds the total value
-					
-					cages.get(line.substring(0,1)).op = op; // inserts eachCage into hashtable(cages) if its not there
-					
-					cages.get(line.substring(0,1)).total = total;
-					
+					setTotalOps(line);
 						
 				}
 				
-				
 				i++;  // sets i for the next row
+				
 				lineNumber++;  // increases the line number by 1 
 				
 				
 				} while(i < textLines.length); // ends when scnr has no more lines left
 		
-			System.out.print("Stop Here");
-			
-			System.out.print("Done");
 		}
 		
 		catch (IOException e) {
@@ -162,6 +134,19 @@ public class InputFile {
 	}
 	
 	
+	private void setTotalOps( String line) {
+		
+		int lineLength = line.length(); // need to check the line length to know where to find the operator
+		
+		String op = (line.substring(lineLength-1)); // finds the operator
+		
+		int total = (Integer.parseInt(line.substring(2,lineLength-1))); // finds the total value
+		
+		cages.get(line.substring(0,1)).op = op; // inserts eachCage into hashtable(cages) if its not there
+		
+		cages.get(line.substring(0,1)).total = total;
+		
+	}
 	 
 
 }

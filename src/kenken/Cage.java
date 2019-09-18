@@ -7,22 +7,20 @@
 package kenken;
 
 import java.util.ArrayList;
-import java.awt.geom.Point2D;
+
 
 public class Cage {
 
 	public int total;  // numerical total from input file
+	
 	public String op;  // operator needed to make total
+	
 	public ArrayList<String>locales = new ArrayList<String>(15); // ArrayList which holds Point2D for cage
-//	 String e;
+	
 	public int size = 0;
 	
-	public Cage(int x, int y) { //no default value as of yet
-//		this.setPoint(x,y);
-		
-//		String e = "("+x+","+y+")";
-//		
-//		locales.add(e);
+	public Cage() { //no default value as of yet
+
 		
 	}
 	
@@ -54,8 +52,6 @@ public class Cage {
 		
 		String e = ("("+(i-1)+","+j+")");
 		
-//		this.e.setLocation(i, i);
-		
 		locales.add(e);
 		
 		size++;
@@ -77,9 +73,9 @@ public class Cage {
 		return Integer.parseInt(x.substring(1, indexComma));
 	}
 	
-	public int getLocalesY(int i) { //input index and get back y coordinate as int
+	public int getLocalesY(int j) { //input index and get back y coordinate as int
 		
-		String y = (locales.get(i));
+		String y = (locales.get(j));
 		
 		int indexComma  = y.indexOf(",");
 		
