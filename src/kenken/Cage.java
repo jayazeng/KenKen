@@ -13,12 +13,17 @@ public class Cage {
 
 	public int total;  // numerical total from input file
 	public String op;  // operator needed to make total
-	public ArrayList<Point2D>locales = new ArrayList<Point2D>(15); // ArrayList which holds Point2D for cage
-	public Point2D e;
+	public ArrayList<String>locales = new ArrayList<String>(15); // ArrayList which holds Point2D for cage
+//	 String e;
 	public int size = 0;
 	
-	public Cage() { //no default value as of yet
-		e = new Point2D.Double();
+	public Cage(int x, int y) { //no default value as of yet
+//		this.setPoint(x,y);
+		
+//		String e = "("+x+","+y+")";
+//		
+//		locales.add(e);
+		
 	}
 	
 	public int getTotal() { // getter for total
@@ -45,9 +50,11 @@ public class Cage {
 		
 	}
 
-	public void setPoint(int i, int j) { // setter for Point (locales)
+	public void setLocales(int i, int j) { // setter for Point (locales)
 		
-		e.setLocation(i, i);
+		String e = ("("+(i-1)+","+j+")");
+		
+//		this.e.setLocation(i, i);
 		
 		locales.add(e);
 		
@@ -55,12 +62,27 @@ public class Cage {
 		
 	}
 
-	public ArrayList<Point2D> getPoint() { // getter for Point (locales)
+	public ArrayList<String> getLocales() { // getter for Point (locales)
 		
 		return locales;
 		
 	}
 	
+	public int getLocalesX(int i) { //input index and get back x coordinate as int
+		
+		String x = (locales.get(i));
+		
+		int indexComma  = x.indexOf(",");
+		
+		return Integer.parseInt(x.substring(1, indexComma));
+	}
 	
-	
+	public int getLocalesY(int i) { //input index and get back y coordinate as int
+		
+		String y = (locales.get(i));
+		
+		int indexComma  = y.indexOf(",");
+		
+		return Integer.parseInt(y.substring(indexComma+1,y.length()));
+	}
 }

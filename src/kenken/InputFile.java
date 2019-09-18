@@ -28,17 +28,19 @@ public class InputFile {
 	
 	File text;
 	
-	Scanner scnr;
+//	Scanner scnr;
 	
 	int n; // the size of the rows, columns and domain
 	
 	String [][] boardNumbers;  // this creates the matrix n x n
 	
-	Point2D e;  // the (i,j) coordinate
+	String e;  // the (i,j) coordinate
 	
 	Hashtable<String,Cage> cages;
 	
-	HashMap<Point2D,String> cageLookup;
+//	HashMap<Point2D,String> cageLookup;
+	
+	Hashtable<String,String> cageLookup;
 	
 	Cage eachCage;
 	
@@ -51,12 +53,12 @@ public class InputFile {
 			ReadDataFile dFile = new ReadDataFile(file);
 			String[] textLines = dFile.OpenFile();
 
-			e = new Point2D.Double();
+			
+			
 			int lineNumber = 0;  // starting line number
 			
-			int h = 0;
 			
-			int i = -1;  // starting row number
+			int i = 0;  // starting row number
 			
 			int j = 0;  // starting column number
 	
@@ -64,14 +66,15 @@ public class InputFile {
 			
 			cages = new Hashtable<String,Cage>();  //hashtable which captures the letter in position one and an object in the second position  
 			
-			cageLookup = new HashMap<Point2D,String>();  // Need a Cage by point lookup table
+//			cageLookup = new HashMap<Point2D,String>();  // Need a Cage by point lookup table
 			
-			eachCage = new Cage();  // This is one group of cells that have a common constraint
-	
+			cageLookup = new Hashtable<String,String>();  // Need a Cage by point lookup table
+			
+			
 		
 			do { // using do since it has to run atleast one time
 				
-				String line = textLines[h];  //looks for i line
+				String line = textLines[i];  //looks for i line
 				j=0;
 				if(lineNumber == 0) { //reads the first value and sets to N & creates Array
 					n = Integer.parseInt(line); 
@@ -80,27 +83,31 @@ public class InputFile {
 					
 						for(;j<n;j++) { //loop through the cols for each row
 							
-							boardNumbers[i][j] = line.substring(j, j+1);  // grabs the individual cell and assigns it 
-								
-							e.setLocation(i, j);  // create point - might be redundant but using for now
+							e = ("("+(i-1)+","+j+")");  // create point - might be redundant but using for now
 							
-							cageLookup.put(e,boardNumbers[i][j]); //put the point (i,j) as key and cage Name (ie A, B, C) as value
-								
-							if(!cages.containsKey(boardNumbers[i][j])){  // if [i][j] is not in hashtable then set point to particular cage
+							this.eachCage = new Cage((i-1),j);  // This is one group of cells that have a common constraint
 							
-								eachCage.setPoint(i, j);	// set (i,j) into the obect's locale
+							boardNumbers[i-1][j] = line.substring(j, j+1);  // grabs the individual cell and assigns it 
 								
-								cages.put(boardNumbers[i][j], eachCage);  // put (i,j)'s value=key (ie A, B,C) & put eachCage as value into hashtable
+							this.cageLookup.put(("("+(i-1)+","+j+")"),boardNumbers[i-1][j]); //put the point (i,j) as key and cage Name (ie A, B, C) as value
+								
+							if(!cages.containsKey(boardNumbers[i-1][j])){  // if [i][j] is not in hashtable then set point to particular cage
+							
+//								e.setLocation(i-1, j);
+								
+								this.eachCage.locales.add("("+(i-1)+","+j+")");	// set (i,j) into the obect's locale
+								
+								this.cages.put(boardNumbers[i-1][j], this.eachCage);  // put (i,j)'s value=key (ie A, B,C) & put eachCage as value into hashtable
 								
 							} else {
 								
-								eachCage = cages.get(boardNumbers[i][j]);  // grabs individual cage by key value in boardNumbers[i][j]
+								this.eachCage = this.cages.get(boardNumbers[i-1][j]);  // grabs individual cage by key value in boardNumbers[i][j]
 								
-								e.setLocation(i,j); // sets variable equal to the point (i,j)
+//								e.setLocation(i-1,j); // sets variable equal to the point (i,j)
 								
-								eachCage.locales.add(e);  // adds new point (i,j) into the locale ArrayList of existing points
+								this.eachCage.locales.add("("+(i-1)+","+j+")");  // adds new point (i,j) into the locale ArrayList of existing points
 								
-								cages.replace(boardNumbers[i][j], eachCage); // replaces old cage with new cage using key (A,B,C)
+								this.cages.replace(boardNumbers[i-1][j], this.eachCage); // replaces old cage with new cage using key (A,B,C)
 								
 							}
 							
@@ -110,26 +117,27 @@ public class InputFile {
 						
 					}
 				
-				else if( lineNumber > n) {  // when line n+1 is reached, the data changes
+				if( lineNumber > n) {  // when line n+1 is reached, the data changes
 				
 					lineLength = line.length(); // need to check the line length to know where to find the operator
 					
-					eachCage.setOp(line.substring(lineLength-1)); // finds the operator
-					//String what = line.substring(2,lineLength-1);
-					eachCage.setTotal(Integer.parseInt(line.substring(2,lineLength-1))); // finds the total value
+					String op = (line.substring(lineLength-1)); // finds the operator
 					
-					cages.putIfAbsent(line.substring(0,1), eachCage); // inserts eachCage into hashtable(cages) if its not there
+					int total = (Integer.parseInt(line.substring(2,lineLength-1))); // finds the total value
 					
+					cages.get(line.substring(0,1)).op = op; // inserts eachCage into hashtable(cages) if its not there
+					
+					cages.get(line.substring(0,1)).total = total;
 					
 						
 				}
 				
-				h++;
+				
 				i++;  // sets i for the next row
 				lineNumber++;  // increases the line number by 1 
 				
 				
-				} while(h < textLines.length); // ends when scnr has no more lines left
+				} while(i < textLines.length); // ends when scnr has no more lines left
 		
 			System.out.print("Stop Here");
 			

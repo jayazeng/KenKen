@@ -92,8 +92,13 @@ public class SimpleBackTrack {
 		int opTotal = cage.getTotal();
 		int actualTotal = value;
 		for (int index =0; index < cage.locales.size(); index++ ) { //test all the points in the cage
-			int otherX = (int) cage.locales.get(index).getX(); //get x for final array
-			int otherY = (int) cage.locales.get(index).getY(); // get y for final array
+
+			//			int otherX = (int) cage.locales.get(index).getX(); //get x for final array
+			int otherX =  cage.getLocalesX(index); //get x for final array **** Ced's Version
+
+			//			int otherY = (int) cage.locales.get(index).getY(); // get y for final array
+			int otherY =  cage.getLocalesY(index); // get y for final array **** Ced's Version
+			
 			int val = finalSolution[otherX][otherY]; // val of point listed in cage
 			if (val != 0) { //if value has been declared in solution run the code otherwise it doesn't matter
 				if (cage.getOp().contentEquals("+")) { // if addition
