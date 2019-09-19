@@ -78,7 +78,6 @@ public class Cage {
 		String y = (locales.get(j));
 		
 		int indexComma  = y.indexOf(",");
-		
-		return Integer.parseInt(y.substring(indexComma+1,y.length()));
+		return Integer.parseInt(y.substring(indexComma+1,y.length()-1));
 	}
 }

@@ -74,7 +74,7 @@ public class ReadDataFile {
 		
 		SimpleBackTrack sol = new SimpleBackTrack(game);
 		
-		if (sol.backtrack()) {
+		if (sol.solve(0,0)) {
 			sol.printSolution();
 		} else {
 			System.out.println("No solution");
