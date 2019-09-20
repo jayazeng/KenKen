@@ -9,6 +9,9 @@ public class SimpleBackTrack {
 	private boolean completed;
 	private int iterations; // number of nodes accessed
 	private InputFile input; // inputfile that will have all the data
+	
+	private SearchTree tree;
+	private Node currentNode;
 
 	public SimpleBackTrack(InputFile file) {
 		completed = false;
@@ -16,17 +19,14 @@ public class SimpleBackTrack {
 		input = file;
 		n = file.n;
 		finalSolution = new int[n][n];
+		tree = new SearchTree(n);
+		currentNode = tree.getRoot();
 	}
 
 	// backtrack method
 	public boolean solve(int x, int y, int test) {
 		if (completed) {
 			return true;
-		}
-		if (finalSolution[0][0] == 5) {
-			if (finalSolution[0][1] == 6) {
-				System.out.println("the second is correct");
-			}
 		}
 		while (test <= n) {
 			if(checkConstraints(test,x,y)) { // checks to see if the value will work
@@ -51,30 +51,36 @@ public class SimpleBackTrack {
 		return false;
 	}
 
-
-	public boolean backtrack() {
-		if (completed) {
-			return true;
-		}
+	// using search tree to search
+	public void trySearch() {
+		/*
+		 * use current node and add child if the value meets the constraints for the cell
+		 * if a value of 0 is returned by the backtrack method, make the parent of the current node the current
+		 * 
+		 * DON'T KNOW HOW TO INCORPORATE XY VALUES -> how to check constraints without x and y?
+		 * maybe do something with adding the nodes to the cages????
+		 * or maybe add x and y field to node or associate it with the 
+		 * 
+		 */
+		
 		for (int x = 0; x < n; x++) {
-			int testValue = 1; // test value that will be incremented if it doesn't meet constraints
 			for (int y = 0; y < n; y++) {
-				iterations++; // updates number of nodes
-				if (checkConstraints(testValue, x, y)) { // will only update solution if constraints are made
-					finalSolution[x][y] = testValue;
-					if (x == n-1 && y == n-1) { // if at the end of the solution array, you've found it all
-						completed = true;
-					}
-					return true;
-				} else {
-					testValue++; // check with another test value
-					checkConstraints(testValue,x,y);
-				}
+				
 			}
-
 		}
-		return false;
 	}
+	
+	public int backtrack(int x, int y) {
+		int test = 1;
+		while (test <= n) {
+			if(checkConstraints(test,x,y)) { // checks to see if the value will work
+				return test;
+			}
+			test++; // try with another test value
+		}
+		return 0;
+	}
+
 
 	public void printSolution() { //print solution in matrix form (tentatively)
 		for (int x =0; x < n; x++) {
