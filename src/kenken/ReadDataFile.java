@@ -80,7 +80,7 @@ public class ReadDataFile {
 
 		if (sol.backtrack()) {
 			
-		if (sol.solve(0,0)) {
+		if (sol.solve(0,0,1)) {
 
 			sol.printSolution();
 		

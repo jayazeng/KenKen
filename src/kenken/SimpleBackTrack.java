@@ -19,7 +19,7 @@ public class SimpleBackTrack {
 	}
 
 	// backtrack method
-	public boolean solve(int x, int y) {
+	public boolean solve(int x, int y, int test) {
 		if (completed) {
 			return true;
 		}
@@ -28,36 +28,30 @@ public class SimpleBackTrack {
 				System.out.println("the second is correct");
 			}
 		}
-		for (; x < n;) {
-			for (; y < n;) {
-				for (int testValue = 1; testValue <= n; testValue++) {
-					if(checkConstraints(testValue,x,y)) {
-						//iterations++;
-						finalSolution[x][y] = testValue;
-						if (x == n-1 && y == n-1) {
-							completed = true;
-						}
-						if (y < n - 1 && solve(x,y+1)) {
-							iterations++;
-							return true;
-						} 
-						else if (y == n-1 && x < n && solve(x+1,0)){
-							 iterations++;
-							 return true;
-						}
-						else {
-							finalSolution[x][y] = 0;
-						}
-					}
+		while (test <= n) {
+			if(checkConstraints(test,x,y)) { // checks to see if the value will work
+				iterations++; // update iterations
+				finalSolution[x][y] = test; // set value equal
+				if (x == n-1 && y == n-1) { // if reached end return true
+					completed = true;
+					return true;
 				}
-				return false;
+				if (y < n - 1 && solve(x,y+1, test)) { // check next cell
+					return true;
+				} 
+				else if (y == n-1 && x < n && solve(x+1,0, test)){ // check next cell if have to switch rows
+					return true;
+				}
+				else {
+					finalSolution[x][y] = 0; // else change everything to 0
+				}
 			}
-			return false;
+			test++; // try with another test value
 		}
 		return false;
 	}
-	
-	
+
+
 	public boolean backtrack() {
 		if (completed) {
 			return true;
@@ -77,7 +71,7 @@ public class SimpleBackTrack {
 					checkConstraints(testValue,x,y);
 				}
 			}
-			
+
 		}
 		return false;
 	}
@@ -90,7 +84,7 @@ public class SimpleBackTrack {
 			System.out.println();
 		}
 	}
-	
+
 	//Constraints method
 	protected boolean checkConstraints(int value, int x, int y) { //checks all the constraints
 		if (checkRow(x,y,value) && checkColumn(x,y,value) && checkOperation(x,y, value)) {
@@ -135,7 +129,7 @@ public class SimpleBackTrack {
 
 			//			int otherY = (int) cage.locales.get(index).getY(); // get y for final array
 			int otherY =  cage.getLocalesY(index); // get y for final array **** Ced's Version
-			
+
 			int val = finalSolution[otherX][otherY]; // val of point listed in cage
 			if (val != 0) { //if value has been declared in solution run the code otherwise it doesn't matter
 				if (cage.getOp().contentEquals("+")) { // if addition
