@@ -77,8 +77,12 @@ public class ReadDataFile {
 		
 		SimpleBackTrack sol = new SimpleBackTrack(game);
 		
+<<<<<<< HEAD
 		if (sol.backtrack()) {
 			
+=======
+		if (sol.solve(0,0)) {
+>>>>>>> branch 'master' of https://github.com/jayazeng/KenKen.git
 			sol.printSolution();
 		
 		} else {

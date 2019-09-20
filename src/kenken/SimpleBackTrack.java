@@ -9,7 +9,6 @@ public class SimpleBackTrack {
 	private boolean completed;
 	private int iterations; // number of nodes accessed
 	private InputFile input; // inputfile that will have all the data
-	private Point2D p; //place holder point that's only used to access values
 
 	public SimpleBackTrack(InputFile file) {
 		completed = false;
@@ -17,10 +16,48 @@ public class SimpleBackTrack {
 		input = file;
 		n = file.n;
 		finalSolution = new int[n][n];
-		p = new Point2D.Double();
 	}
 
 	// backtrack method
+	public boolean solve(int x, int y) {
+		if (completed) {
+			return true;
+		}
+		if (finalSolution[0][0] == 5) {
+			if (finalSolution[0][1] == 6) {
+				System.out.println("the second is correct");
+			}
+		}
+		for (; x < n;) {
+			for (; y < n;) {
+				for (int testValue = 1; testValue <= n; testValue++) {
+					if(checkConstraints(testValue,x,y)) {
+						//iterations++;
+						finalSolution[x][y] = testValue;
+						if (x == n-1 && y == n-1) {
+							completed = true;
+						}
+						if (y < n - 1 && solve(x,y+1)) {
+							iterations++;
+							return true;
+						} 
+						else if (y == n-1 && x < n && solve(x+1,0)){
+							 iterations++;
+							 return true;
+						}
+						else {
+							finalSolution[x][y] = 0;
+						}
+					}
+				}
+				return false;
+			}
+			return false;
+		}
+		return false;
+	}
+	
+	
 	public boolean backtrack() {
 		if (completed) {
 			return true;
@@ -84,9 +121,9 @@ public class SimpleBackTrack {
 	// check to see if values + op get the total needed once all areas are filled
 	private boolean checkOperation(int x, int y, int value) {
 		//hashtable by op
-		p.setLocation(x, y);
 		//get cage
-		String lookup = input.cageLookup.get(p);
+		String point = "("+ x+ "," + y + ")";
+		String lookup = input.cageLookup.get(point);
 		Cage cage = input.cages.get(lookup);
 		//get operation total and set the actualtotal variable to the test value
 		int opTotal = cage.getTotal();
