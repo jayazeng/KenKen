@@ -32,19 +32,21 @@
 
 package kenken;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 public class LocalSearch {
 	private int[][] finalSolution; //2D int array to hold the solution
 	int n; //length and width of array
 	private boolean completed;
 	private int iterations; //number of nodes accessed
 	private InputFile input; //input file that will have all the data 
-	private Point2D p; //place holder point that's only used to access values 
 	
 	public LocalSearch(InputFile file) {
 		completed = false;
 		iterations = 0;
 		input = file;
 		n = file.n;
+		finalSolution = new int[n][n];
+		
 	}
 	
 	
@@ -65,18 +67,52 @@ public class LocalSearch {
  */
 	
 //LocalSearch Method
-	public boolean LocalSearch(InputFile input) {
+	public boolean search() {
 		if(completed) {
 			return true;
 		}
 		for (int iteration = 0; iteration < 1000000; iteration++) { //Runs 1000000 iterations before stopping
 			//inner loop goes here
 			
+			// check how many violations there are total and then when that equals 0 return true?
+			
+			//get random 2 cells and swap them
+			int x1 = getRandom();
+			int y1 = getRandom();
+			int x2 = getRandom();
+			int y2 = getRandom();
+			int originalViolations = checkConstraints(finalSolution[x1][y1], x1, y1) + checkConstraints(finalSolution[x2][y2], x2, y2);
+			int newViolations = checkConstraints(finalSolution[x2][y2], x1, y1) + checkConstraints(finalSolution[x1][y1], x2, y2);
+			if (newViolations < originalViolations) {
+				int swap = finalSolution[x1][y1];
+				finalSolution[x1][y1] = finalSolution[x2][y2];
+				finalSolution[x2][y2] = swap; 
+			}
+			
 		}
 		return false;
 	}
 	
+	// create a random integer
+	public int getRandom() {
+		int random = (int) (Math.random() * ((n - 1) + 1)) + 1;
+		return random;
+	}
+// populating solution with random integers
 	
+	public void initial() {
+		ArrayList<Integer> values = new ArrayList<Integer>(n);
+		for (int val = 1; val <= n; val++) {
+			values.add(val);
+		}
+		for (int x = 0; x < n; x++) {
+			for (int y = 0; y < n; y++) {
+				finalSolution[x][y] = values.get(y);
+			}
+			values.add(0,values.get(n-1));
+			values.remove(n);
+		}
+	}
 	
 //Printing Solution from LocalSearch
 	public void printSolution(int[][] solution) {
@@ -90,37 +126,39 @@ public class LocalSearch {
 	
 	
 //Constraint Method (should be same as BackTrack) - VIOLATIONS OF CONSTRAINTS 
-	protected boolean checkConstraints(int value, int x, int y) {
-		if (checkRow(x,y,value) && checkColumn(x,y,value) && checkOperations(x,y,value)) {
-			return true;
-		}
-		return false;
+	protected int checkConstraints(int value, int x, int y) {
+		int violations = 0;
+		violations += checkRow(x,y,value);
+		violations += checkColumn(x,y,value);
+		violations += checkOperations(x,y,value);
+		return violations;
 	}
 	
 	//CONSTRAINT 1 - check each row for no repeated number
-	private boolean checkRow(int x, int y, int value) {
+	private int checkRow(int x, int y, int value) {
+		int toReturn = 0;
 		for (int col = 0; col < y ; col ++) {
 			if(finalSolution[x][col] == value) {
-				return false;
+				toReturn++;
 			}
 		}
-		return true;
+		return toReturn;
 	}
 	//CONSTRAINT 2 - check each column for now repeated number
-	private boolean checkColumn(int x, int y, int value) {
+	private int checkColumn(int x, int y, int value) {
+		int toReturn = 0;
 		for (int row = 0; row < x; row++) {
 			if(finalSolution[row][y] == value){
-				return false;
+				toReturn++;
 			}
 		}
-		return true;
+		return toReturn;
 	}
 	//CONSTRAINT 3 - check each partition to see if it satisfies mathematical expression 
-	private boolean checkOperations(int x, int y, int value) {
-		//hashtable by op
-		p.setLocation(x,y);
+	private int checkOperations(int x, int y, int value) {
+		int toReturn = 0;
 		//get cage
-		String lookup = input.cageLookup.get(p);
+		String lookup = "(" + x + "," + y + ")";
 		Cage cage = input.cages.get(lookup);
 		//get operation total and set the actual total variable to the test value
 		int opTotal = cage.getTotal();
@@ -146,10 +184,10 @@ public class LocalSearch {
 				}
 			}
 		}
-		if (actualTotal > opTotal) { //check if actual total will be greater than expected total
-			return false;
+		if (actualTotal > opTotal) { //check if actual total will be greater than expected total and update violations
+			toReturn++;
 		}
-		return true; //this will return true if actual total is less than or equal to expected total
+		return toReturn; //this will return number of violations
 	}
 	
 	
