@@ -28,6 +28,7 @@ public class ReadDataFile {
 		BufferedReader textReader = new BufferedReader(fr);
 		
 		int numOfLines = readLines();
+		
 		String[] textData = new String[numOfLines];
 		
 		int i;
@@ -37,8 +38,8 @@ public class ReadDataFile {
 			textData[i] = textReader.readLine();
 		}
 		
-		
 		textReader.close();
+		
 		return textData;
 		
 	}
@@ -46,6 +47,7 @@ public class ReadDataFile {
 	int readLines() throws IOException{
 		
 		FileReader file_to_read = new FileReader(dataPath);
+		
 		BufferedReader buffFile = new BufferedReader(file_to_read);
 		
 		String dataFileLine;
@@ -61,6 +63,7 @@ public class ReadDataFile {
 		buffFile.close();
 		
 		return numOfLines;
+		
 	}
 
 
@@ -75,9 +78,13 @@ public class ReadDataFile {
 		SimpleBackTrack sol = new SimpleBackTrack(game);
 		
 		if (sol.backtrack()) {
+			
 			sol.printSolution();
+		
 		} else {
+		
 			System.out.println("No solution");
+		
 		}
 		
 	}

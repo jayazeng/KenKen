@@ -12,6 +12,11 @@
  * -> Also need to create a count of how many cage letters were present on the inputed board.  Anotherwords
  *    how many A or B or C points are respectively needed to complete the cage.
  * 
+ *  REMEMBER DIVISION AND MINUS CAN ONLY BY TWO SQUARES
+ * 
+ *  NEED TO CHANGE THE INPUT FUNCTION TO ACCEPT THE COLON INSTEAD OF THE SPOTS
+ * 
+ * 
  */
 
 package kenken;
@@ -149,4 +154,5 @@ public class InputFile {
 	}
 	 
 
+	
 }
