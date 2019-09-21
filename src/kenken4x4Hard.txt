@@ -1,0 +1,12 @@
+4
+AABC
+DBBC
+DEFG
+EEFG
+A:4+
+B:8*
+C:1-
+D:2/
+E:9+
+F:2-
+G:5+
