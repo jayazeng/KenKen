@@ -52,9 +52,9 @@ public class InputFile {
 			
 			int lineNumber = 0;  // starting line number
 			
-			int i = 0;  // starting row number
+			int i = 1;  // starting row number
 			
-			int j = 0;  // starting column number
+			int j = 1;  // starting column number
 	
 			int lineLength;  // measures the length of row for constraint input
 			
@@ -66,7 +66,7 @@ public class InputFile {
 				
 				String line = textLines[i].trim();  //looks for i line
 				
-				j=0;
+				j=1;
 				
 				if(lineNumber == 0) { //reads the first value and sets to N & creates Array
 					
@@ -76,7 +76,7 @@ public class InputFile {
 				
 				} else if(lineNumber <= n) { //must be between line 1 and line n to be the board
 					
-						for(;j<n;j++) { //loop through the cols for each row
+						for(;j<=n;j++) { //loop through the cols for each row
 							
 							e = ("("+(i-1)+","+j+")");  // create point - might be redundant but using for now
 							
@@ -117,7 +117,7 @@ public class InputFile {
 				lineNumber++;  // increases the line number by 1 
 				
 				
-				} while(i < textLines.length); // ends when scnr has no more lines left
+				} while(i <= textLines.length); // ends when scnr has no more lines left
 		
 		}
 		
