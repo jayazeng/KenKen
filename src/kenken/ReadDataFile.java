@@ -71,7 +71,7 @@ public class ReadDataFile {
 
 	public static void main(String[] args) throws IOException {
 
-		String data_file = "./src/kenken.txt";
+		String data_file = "./src/kenken4x4Hard.txt";
 
 		InputFile game = new InputFile(data_file);
 

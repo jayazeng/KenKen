@@ -15,7 +15,9 @@ public class Node {
 		this.n = n;
 	}
 	// if passes constraints, add a child node
-	public void addChild(Node child) {
+	public void addChild(int value) {
+		Node child = new Node(this.n);
+		child.setValue(value);
 		child.parent = this;
 		this.children.add(child);
 	}
