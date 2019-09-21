@@ -6,19 +6,20 @@ package kenken;
 public class SearchTree {
 	private Node root;
 	private int n;
-	
+
 	public SearchTree(int n) {
 		this.n = n;
 		root = new Node(n);
-		root.parent = null;
+		root.setParent(null);
 	}
 	// adds a new node to a parent... maybe used for some kind of forward tracking method
-	public void addNewNode(Node parent, int childValue, int index) {
+	public void addNewNode(Node parent, int childValue) {
 		Node child = new Node(n);
 		child.setValue(childValue);
-		parent.addChild(child, index);		
+		child.setParent(parent);
+		parent.addChild(child);		
 	}
-	
+
 	// returns number of total nodes traversed by tree
 	public int getNumOfNodes(Node root) {
 		int count = 0;
@@ -30,21 +31,42 @@ public class SearchTree {
 		return count;
 	}
 	//get height of search tree and when that is equal to n*n, we've found all the values
-	public int getDepth(Node root) {
-		if (root == null) {
-			return 0;
-		} else {
-			int maxDepth = 0;
-			for(Node child: root.getChildren()) {
-				maxDepth = Math.max(maxDepth, getDepth(child));
-			}
-			return maxDepth + 1;
+	public int getDepth() {
+		Node traverse = this.root;
+		int depth = 0;
+		while (traverse != null) {
+			traverse = traverse.getLastChild();
+			depth++;
 		}
-		
+		return depth;
+	}
+
+	public int getDepthOfNode(Node find) {
+		if (find == null) {
+			return 0;
+		}
+		Node traverse = this.root;
+		int depth = 0;
+		while (traverse != find) {
+			traverse = traverse.getLastChild();
+			depth++;
+		}
+		return depth;
 	}
 	
+	public Node getNodeAtDepth(int depth) {
+		Node traverse = this.root;
+		for (int i = 0; i < depth; i++) {
+			if (traverse.getLastChild() == null) {
+				return null;
+			}
+			traverse = traverse.getLastChild();
+		}
+		return traverse;
+	}
+
 	public Node getRoot() {
 		return this.root;
 	}
-	
+
 }

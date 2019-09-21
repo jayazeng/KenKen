@@ -1,21 +1,14 @@
 package kenken;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
-
 public class SimpleBackTrack {
 	private int[][] finalSolution; //2d int array to hold the solution
 	int n; // length and width of array
-	private boolean completed;
-	private int iterations; // number of nodes accessed
 	private InputFile input; // inputfile that will have all the data
-	
+
 	private SearchTree tree;
 	private Node currentNode;
 
 	public SimpleBackTrack(InputFile file) {
-		completed = false;
-		iterations = 0;
 		input = file;
 		n = file.n;
 		finalSolution = new int[n][n];
@@ -23,7 +16,7 @@ public class SimpleBackTrack {
 		currentNode = tree.getRoot();
 	}
 
-	// backtrack method
+	/*
 	public boolean solve(int x, int y, int test) {
 		if (completed) {
 			return true;
@@ -49,7 +42,7 @@ public class SimpleBackTrack {
 			test++; // try with another test value
 		}
 		return false;
-	}
+	}*/
 
 	// using search tree to search
 	public void trySearch() {
@@ -62,56 +55,94 @@ public class SimpleBackTrack {
 		 * or maybe add x and y field to node or associate it with the 
 		 * 
 		 */
-		
-		for (int x = 0; x < n; x++) {
-			for (int y = 0; y < n; y++) {
-				
+		while (tree.getDepth() <= n*n) {
+			if (backtrack() != 0) {
+				tree.addNewNode(currentNode, backtrack());
+				currentNode = currentNode.getLastChild();
+			} else {
+				currentNode = currentNode.getParent();
 			}
 		}
+
 	}
-	
-	public int backtrack(int x, int y) {
+
+	public int backtrack() {
 		int test = 1;
 		while (test <= n) {
-			if(checkConstraints(test,x,y)) { // checks to see if the value will work
+			if(checkConstraints(test) && checkPreviousValues(test)) { // checks to see if the value will work
 				return test;
 			}
 			test++; // try with another test value
 		}
 		return 0;
 	}
-
-
-	public void printSolution() { //print solution in matrix form (tentatively)
-		for (int x =0; x < n; x++) {
-			for (int y =0; y < n; y++) {
-				System.out.print(finalSolution[x][y]+" ");
-			}
-			System.out.println();
-		}
-	}
-
-	//Constraints method
-	protected boolean checkConstraints(int value, int x, int y) { //checks all the constraints
-		if (checkRow(x,y,value) && checkColumn(x,y,value) && checkOperation(x,y, value)) {
-			return true;
-		}
-		return false;
-	}
-	// check the rows for the same number
-	private boolean checkRow(int x, int y, int value) {
-		for (int col = 0; col < y; col++) {
-			if (finalSolution[x][col] == value) {
+	
+	public boolean checkPreviousValues(int test) {
+		for (Node child: currentNode.getChildren()) {
+			if (child.getValue() == test) {
 				return false;
 			}
 		}
 		return true;
 	}
 
+
+	public void printSolution() { //print solution in matrix form (tentatively)
+		Node traverse = tree.getRoot();
+		for (int x =0; x < n; x++) {
+			for (int y =0; y < n; y++) {
+				traverse = traverse.getLastChild();
+				System.out.print(traverse.getValue()+" ");
+			}
+			System.out.println();
+		}
+	}
+
+	public int getX(Node n) {
+		int depth = tree.getDepthOfNode(n) + 1; //have to plus one because we're looking for the next node
+		if (depth > 0) {
+			return (int) Math.floor(depth / this.n);
+		}
+		return 0;
+	}
+
+	public int getY(Node n) {
+		int depth = tree.getDepthOfNode(n) + 1;
+		if (depth > 0) {
+			return (int) depth % this.n;
+		}
+		return 0;
+	}
+
+	//Constraints method
+	protected boolean checkConstraints(int value) { //checks all the constraints
+		if (checkRow(value) && checkColumn(value) && checkOperation(value)) {
+			return true;
+		}
+		return false;
+	}
+	// check the rows for the same number
+	private boolean checkRow(int value) {
+		Node traverse = currentNode;
+		for (int i = 0; i < getY(currentNode); i++) {
+			if (traverse.getValue() == value) {
+				return false;
+			}
+			if (traverse.getParent() == null) {
+				break;
+			}
+			traverse = traverse.getParent();
+
+		}
+		return true;
+	}
+
 	// check the column for the same number
-	private boolean checkColumn(int x, int y, int value) {
-		for (int row = 0; row < x; row++) {
-			if (finalSolution[row][y] == value) {
+	private boolean checkColumn(int value) {
+		Node traverse = currentNode;
+		while (traverse.colUp() != null) {
+			traverse = traverse.colUp();
+			if (traverse.getValue() == value) {
 				return false;
 			}
 		}
@@ -119,10 +150,10 @@ public class SimpleBackTrack {
 	}
 
 	// check to see if values + op get the total needed once all areas are filled
-	private boolean checkOperation(int x, int y, int value) {
+	private boolean checkOperation(int value) {
 		//hashtable by op
 		//get cage
-		String point = "("+ x+ "," + y + ")";
+		String point = "("+ getX(currentNode)+ "," + getY(currentNode) + ")";
 		String lookup = input.cageLookup.get(point);
 		Cage cage = input.cages.get(lookup);
 		//get operation total and set the actualtotal variable to the test value
@@ -136,7 +167,7 @@ public class SimpleBackTrack {
 			//			int otherY = (int) cage.locales.get(index).getY(); // get y for final array
 			int otherY =  cage.getLocalesY(index); // get y for final array **** Ced's Version
 
-			int val = finalSolution[otherX][otherY]; // val of point listed in cage
+			int val = tree.getNodeAtDepth(otherX*n + otherY).getValue(); // val of point listed in cage
 			if (val != 0) { //if value has been declared in solution run the code otherwise it doesn't matter
 				if (cage.getOp().contentEquals("+")) { // if addition
 					actualTotal += val;
@@ -156,7 +187,4 @@ public class SimpleBackTrack {
 		return true; // this will return true if actual total is less than or equal expected total
 	}
 
-	public int getIterations() {
-		return iterations;
-	}
 }

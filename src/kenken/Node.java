@@ -1,35 +1,55 @@
 package kenken;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Node {
 	private int value; // value chosen that successfully will pass constraints test for cell
-	public Node parent;
+	private Node parent;
 	private ArrayList<Node> children; // all the possible values that can be checked for the next cell
 	private int n;
 	private int x; // tentative x and y fields which should be the same for each level of the tree???
 	private int y;
-	private boolean[] possibles;
-	
+
 	public Node(int n) {
 		children = new ArrayList<Node>(n);
 		this.n = n;
-		possibles = new boolean[n];
-		Arrays.fill(possibles, Boolean.TRUE);
 	}
 	// if passes constraints, add a child node
-	public void addChild(Node child, int index) {
-		if (index < n) {
-			child.parent = this;
-			this.children.set(index, child);
-		}
+	public void addChild(Node child) {
+		child.parent = this;
+		this.children.add(child);
+	}
+	
+	public void setParent(Node parent) {
+		this.parent = parent;
+	}
+	
+	public Node getParent() {
+		return this.parent;
 	}
 	// get all children
 	public ArrayList<Node> getChildren() {
 		return this.children;
 	}
-	
+
+	// this will return the node that worked
+	public Node getLastChild() {
+		if (this.children.isEmpty()) {
+			return null;
+		}
+		return this.children.get(this.children.size() - 1);
+	}
+
+	public Node colUp() {
+		Node traverse = this;
+		for (int i = 0; i < n; i++) {
+			if (traverse.parent == null) {
+				return null;
+			}
+			traverse = traverse.parent;
+		}
+		return traverse;
+	}
 	// return the value of node (useful for printing out solution)
 	public int getValue() {
 		return value;
@@ -55,14 +75,4 @@ public class Node {
 	public void setY(int y) {
 		this.y = y;
 	}
-
-	public boolean getPossibles(int index) {
-		return possibles[index];
-	}
-
-	public void setPossiblesFalse(int index) {
-		this.possibles[index] = false;
-	}
-	
-	
 }
