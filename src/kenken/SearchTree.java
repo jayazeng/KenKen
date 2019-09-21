@@ -12,14 +12,7 @@ public class SearchTree {
 		root = new Node(n);
 		root.setParent(null);
 	}
-	// adds a new node to a parent... maybe used for some kind of forward tracking method
-	public void addNewNode(Node parent, int childValue) {
-		Node child = new Node(n);
-		child.setValue(childValue);
-		child.setParent(parent);
-		parent.addChild(child);		
-	}
-
+	
 	// returns number of total nodes traversed by tree
 	public int getNumOfNodes(Node root) {
 		int count = 0;
@@ -65,6 +58,15 @@ public class SearchTree {
 			traverse = traverse.getLastChild();
 		}
 		return traverse;
+	}
+	
+	public void printTree() {
+		Node traverse = this.root;
+		while (traverse.getLastChild()!=null) {
+			System.out.print(traverse.getLastChild().getValue() + " ");
+			traverse = traverse.getLastChild();
+		}
+		System.out.println();
 	}
 
 	public Node getRoot() {

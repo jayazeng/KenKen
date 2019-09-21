@@ -51,11 +51,20 @@ public class SimpleBackTrack {
 		 * 
 		 */
 		while (tree.getDepth() <= n*n) { // keep it running until we get a solution
+			tree.printTree();
 			if (backtrack() != 0) { // check if there is a possible value
-				tree.addNewNode(currentNode, backtrack()); // add the value into the tree
+				currentNode.addChild(backtrack()); // add the value into the tree
+				if (currentNode.getLastChild() == null) {
+					System.out.println("Debuger");
+				}
 				currentNode = currentNode.getLastChild(); // switch the node and start looking for next value
 			} else { // otherwise go back up and start from the previous node
-				currentNode = currentNode.getParent();
+				if (currentNode.getParent() == null) {
+					System.out.println("Debuger");
+					break;
+				} else {
+					currentNode = currentNode.getParent();
+				}
 			}
 		}
 
@@ -72,7 +81,7 @@ public class SimpleBackTrack {
 		}
 		return 0;
 	}
-	
+
 	// this will check the parent's other children to see if you've tested the value before or not
 	public boolean checkPreviousValues(int test) {
 		for (Node child: currentNode.getChildren()) {
@@ -82,7 +91,6 @@ public class SimpleBackTrack {
 		}
 		return true;
 	}
-
 
 	public void printSolution() { //print solution in matrix form 
 		Node traverse = tree.getRoot();
@@ -99,7 +107,11 @@ public class SimpleBackTrack {
 	public int getX(Node n) {
 		int depth = tree.getDepthOfNode(n) + 1; //have to plus one because we're looking for the next node
 		if (depth > 0) {
-			return (int) Math.floor(depth / this.n);
+			int x = (int) Math.floor(depth / this.n);
+			if (depth % this.n != 0) {
+				return x + 1;
+			}
+			return x;
 		}
 		return 0;
 	}
@@ -108,7 +120,11 @@ public class SimpleBackTrack {
 	public int getY(Node n) {
 		int depth = tree.getDepthOfNode(n) + 1; // have to plus one because we're looking for the next node
 		if (depth > 0) {
-			return (int) depth % this.n;
+			int y = (int) depth % this.n;
+			if (y == 0) {
+				return this.n;
+			}
+			return y;
 		}
 		return 0;
 	}
@@ -120,12 +136,12 @@ public class SimpleBackTrack {
 		}
 		return false;
 	}
-	
+
 	// check the row for the same number
 	private boolean checkRow(int value) {
 		Node traverse = currentNode;
-		for (int i = 0; i < getY(currentNode); i++) { // this will make the node only go back to the beginning of the row
-			if (traverse.getValue() == value) {
+		for (int i = 1; i < getY(currentNode); i++) { // this will make the node only go back to the beginning of the row
+			if (traverse.getValue()  == value) {
 				return false;
 			}
 			if (traverse.getParent() == null) {
@@ -139,12 +155,13 @@ public class SimpleBackTrack {
 
 	// check the column for the same number
 	private boolean checkColumn(int value) {
-		Node traverse = currentNode;
-		while (traverse.colUp() != null) { // use colUp to get the node that is n cells before it, thus a column up
-			traverse = traverse.colUp();
-			if (traverse.getValue() == value) {
+		int depth = tree.getDepthOfNode(currentNode) + 1;
+		depth -= n;
+		while (depth > 0) { // use colUp to get the node that is n cells before it, thus a column up
+			if (tree.getNodeAtDepth(depth).getValue() == value) {
 				return false;
 			}
+			depth -= n;
 		}
 		return true;
 	}
@@ -154,28 +171,36 @@ public class SimpleBackTrack {
 		//get cage
 		String point = "("+ getX(currentNode)+ "," + getY(currentNode) + ")";
 		String lookup = input.cageLookup.get(point);
+		int depth = tree.getDepthOfNode(currentNode);
 		Cage cage = input.cages.get(lookup);
 		//get operation total and set the actualtotal variable to the test value
 		int opTotal = cage.getTotal();
 		int actualTotal = value;
-		for (int index =0; index < cage.locales.size(); index++ ) { //test all the points in the cage
+		for (int index = 0; index < cage.locales.size(); index++ ) { //test all the points in the cage
 
 			int otherX =  cage.getLocalesX(index); //get x for final array **** Ced's Version
 
 			int otherY =  cage.getLocalesY(index); // get y for final array **** Ced's Version
 
-			int val = tree.getNodeAtDepth(otherX*n + otherY).getValue(); // val of point listed in cage
-			if (val != 0) { //if value has been declared in solution run the code otherwise it doesn't matter
-				if (cage.getOp().contentEquals("+")) { // if addition
+			int findNode = otherY + (otherX-1) * n;
+			if (findNode > depth) {
+				return true;
+			}
+			if (tree.getNodeAtDepth(findNode) != null) { // check to see if this node has been created
+				int val = tree.getNodeAtDepth(findNode).getValue(); // val of point listed in cage
+				if (cage.getOp().equals("+")) { // if addition
 					actualTotal += val;
-				} else if (cage.getOp().contentEquals("*")) { // if multiplication
+				} else if (cage.getOp().equals("*")) { // if multiplication
 					actualTotal *= val;
-				} else if (cage.getOp().contentEquals("/")) { // if division
-					actualTotal /= val;
-				} else if (cage.getOp().contentEquals("-")) { // if subtraction
-					actualTotal -= val;
+				} else if (cage.getOp().equals("/")) { // if division
+					if (actualTotal % val != 0) {
+						if (val % actualTotal != 0) {
+							return false;
+						}
+					}
+				} else if (cage.getOp().equals("-")) { // if subtraction
+					actualTotal = Math.abs(actualTotal - val);
 				}
-
 			}
 		}
 		if (actualTotal > opTotal) { // check if actual total will be greater than expected total
@@ -183,5 +208,6 @@ public class SimpleBackTrack {
 		}
 		return true; // this will return true if actual total is less than or equal expected total
 	}
+	
 
 }
