@@ -1,7 +1,6 @@
 package kenken;
 
 public class SimpleBackTrack {
-	private int[][] finalSolution; //2d int array to hold the solution
 	int n; // length and width of array
 	private InputFile input; // inputfile that will have all the data
 
@@ -11,7 +10,6 @@ public class SimpleBackTrack {
 	public SimpleBackTrack(InputFile file) {
 		input = file;
 		n = file.n;
-		finalSolution = new int[n][n];
 		tree = new SearchTree(n);
 		currentNode = tree.getRoot();
 	}
@@ -47,25 +45,23 @@ public class SimpleBackTrack {
 	// using search tree to search
 	public void trySearch() {
 		/*
-		 * use current node and add child if the value meets the constraints for the cell
-		 * if a value of 0 is returned by the backtrack method, make the parent of the current node the current
-		 * 
-		 * DON'T KNOW HOW TO INCORPORATE XY VALUES -> how to check constraints without x and y?
-		 * maybe do something with adding the nodes to the cages????
-		 * or maybe add x and y field to node or associate it with the 
+		 * use current node and test for the next cell
+		 * if you find a successful value for the next cell, 
+		 * add it into the tree and update the current node to the next cell
 		 * 
 		 */
-		while (tree.getDepth() <= n*n) {
-			if (backtrack() != 0) {
-				tree.addNewNode(currentNode, backtrack());
-				currentNode = currentNode.getLastChild();
-			} else {
+		while (tree.getDepth() <= n*n) { // keep it running until we get a solution
+			if (backtrack() != 0) { // check if there is a possible value
+				tree.addNewNode(currentNode, backtrack()); // add the value into the tree
+				currentNode = currentNode.getLastChild(); // switch the node and start looking for next value
+			} else { // otherwise go back up and start from the previous node
 				currentNode = currentNode.getParent();
 			}
 		}
 
 	}
 
+	// backtrack method
 	public int backtrack() {
 		int test = 1;
 		while (test <= n) {
@@ -77,6 +73,7 @@ public class SimpleBackTrack {
 		return 0;
 	}
 	
+	// this will check the parent's other children to see if you've tested the value before or not
 	public boolean checkPreviousValues(int test) {
 		for (Node child: currentNode.getChildren()) {
 			if (child.getValue() == test) {
@@ -87,7 +84,7 @@ public class SimpleBackTrack {
 	}
 
 
-	public void printSolution() { //print solution in matrix form (tentatively)
+	public void printSolution() { //print solution in matrix form 
 		Node traverse = tree.getRoot();
 		for (int x =0; x < n; x++) {
 			for (int y =0; y < n; y++) {
@@ -98,6 +95,7 @@ public class SimpleBackTrack {
 		}
 	}
 
+	// get x coordinate of cell
 	public int getX(Node n) {
 		int depth = tree.getDepthOfNode(n) + 1; //have to plus one because we're looking for the next node
 		if (depth > 0) {
@@ -106,8 +104,9 @@ public class SimpleBackTrack {
 		return 0;
 	}
 
+	// get y coordinate of cell
 	public int getY(Node n) {
-		int depth = tree.getDepthOfNode(n) + 1;
+		int depth = tree.getDepthOfNode(n) + 1; // have to plus one because we're looking for the next node
 		if (depth > 0) {
 			return (int) depth % this.n;
 		}
@@ -121,10 +120,11 @@ public class SimpleBackTrack {
 		}
 		return false;
 	}
-	// check the rows for the same number
+	
+	// check the row for the same number
 	private boolean checkRow(int value) {
 		Node traverse = currentNode;
-		for (int i = 0; i < getY(currentNode); i++) {
+		for (int i = 0; i < getY(currentNode); i++) { // this will make the node only go back to the beginning of the row
 			if (traverse.getValue() == value) {
 				return false;
 			}
@@ -140,7 +140,7 @@ public class SimpleBackTrack {
 	// check the column for the same number
 	private boolean checkColumn(int value) {
 		Node traverse = currentNode;
-		while (traverse.colUp() != null) {
+		while (traverse.colUp() != null) { // use colUp to get the node that is n cells before it, thus a column up
 			traverse = traverse.colUp();
 			if (traverse.getValue() == value) {
 				return false;
@@ -151,7 +151,6 @@ public class SimpleBackTrack {
 
 	// check to see if values + op get the total needed once all areas are filled
 	private boolean checkOperation(int value) {
-		//hashtable by op
 		//get cage
 		String point = "("+ getX(currentNode)+ "," + getY(currentNode) + ")";
 		String lookup = input.cageLookup.get(point);
@@ -161,10 +160,8 @@ public class SimpleBackTrack {
 		int actualTotal = value;
 		for (int index =0; index < cage.locales.size(); index++ ) { //test all the points in the cage
 
-			//			int otherX = (int) cage.locales.get(index).getX(); //get x for final array
 			int otherX =  cage.getLocalesX(index); //get x for final array **** Ced's Version
 
-			//			int otherY = (int) cage.locales.get(index).getY(); // get y for final array
 			int otherY =  cage.getLocalesY(index); // get y for final array **** Ced's Version
 
 			int val = tree.getNodeAtDepth(otherX*n + otherY).getValue(); // val of point listed in cage

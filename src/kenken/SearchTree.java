@@ -41,6 +41,7 @@ public class SearchTree {
 		return depth;
 	}
 
+	// find the depth of a node in the tree so as to know how much down it is
 	public int getDepthOfNode(Node find) {
 		if (find == null) {
 			return 0;
@@ -54,6 +55,7 @@ public class SearchTree {
 		return depth;
 	}
 	
+	// function used to get a specific node at a depth or say that it hasn't been declared yet
 	public Node getNodeAtDepth(int depth) {
 		Node traverse = this.root;
 		for (int i = 0; i < depth; i++) {

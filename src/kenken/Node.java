@@ -40,6 +40,7 @@ public class Node {
 		return this.children.get(this.children.size() - 1);
 	}
 
+	// will return node that is n cells before it in the puzzle or returns null to signify there isn't one
 	public Node colUp() {
 		Node traverse = this;
 		for (int i = 0; i < n; i++) {
