@@ -64,7 +64,7 @@ public class InputFile {
 			
 			do { // using do since it has to run atleast one time
 				
-				String line = textLines[i].trim();  //looks for i line
+				String line = textLines[i-1].trim();  //looks for i line
 				
 				j=1;
 				
@@ -78,27 +78,27 @@ public class InputFile {
 					
 						for(;j<=n;j++) { //loop through the cols for each row
 							
-							e = ("("+(i-1)+","+j+")");  // create point - might be redundant but using for now
+							e = ("("+(i-2)+","+(j-1)+")");  // create point - might be redundant but using for now
 							
 							this.eachCage = new Cage();  // This is one group of cells that have a common constraint
 							
-							boardNumbers[i-1][j] = line.substring(j, j+1);  // grabs the individual cell and assigns it 
+							boardNumbers[i-2][j-1] = line.substring(j-1, j);  // grabs the individual cell and assigns it 
 								
-							this.cageLookup.put(("("+(i-1)+","+j+")"),boardNumbers[i-1][j]); //put the point (i,j) as key and cage Name (ie A, B, C) as value
+							this.cageLookup.put(("("+(i-1)+","+(j)+")"),boardNumbers[i-2][j-1]); //put the point (i,j) as key and cage Name (ie A, B, C) as value
 								
-							if(!cages.containsKey(boardNumbers[i-1][j])){  // if [i][j] is not in hashtable then set point to particular cage
+							if(!cages.containsKey(boardNumbers[i-2][j-1])){  // if [i][j] is not in hashtable then set point to particular cage
 								
-								this.eachCage.locales.add("("+(i-1)+","+j+")");	// set (i,j) into the obect's locale
+								this.eachCage.locales.add("("+(i-1)+","+(j)+")");	// set (i,j) into the obect's locale
 								
-								this.cages.put(boardNumbers[i-1][j], this.eachCage);  // put (i,j)'s value=key (ie A, B,C) & put eachCage as value into hashtable
+								this.cages.put(boardNumbers[i-2][j-1], this.eachCage);  // put (i,j)'s value=key (ie A, B,C) & put eachCage as value into hashtable
 								
 							} else {
 								
-								this.eachCage = this.cages.get(boardNumbers[i-1][j]);  // grabs individual cage by key value in boardNumbers[i][j]
+								this.eachCage = this.cages.get(boardNumbers[i-2][j-1]);  // grabs individual cage by key value in boardNumbers[i][j]
 						
-								this.eachCage.locales.add("("+(i-1)+","+j+")");  // adds new point (i,j) into the locale ArrayList of existing points
+								this.eachCage.locales.add("("+(i-1)+","+(j)+")");  // adds new point (i,j) into the locale ArrayList of existing points
 								
-								this.cages.replace(boardNumbers[i-1][j], this.eachCage); // replaces old cage with new cage using key (A,B,C)
+								this.cages.replace(boardNumbers[i-2][j-1], this.eachCage); // replaces old cage with new cage using key (A,B,C)
 								
 							}
 							
@@ -126,7 +126,7 @@ public class InputFile {
 			System.out.println(e.getMessage());
 			
 		}			
-			
+			System.out.print("end");
 		}  // end of constructor
 	
 	
