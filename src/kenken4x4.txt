@@ -1,0 +1,11 @@
+4
+AAAB
+CADB
+CEBB
+CEFF
+A:36*
+B:9+
+C:6+
+D:1
+E:2/
+F:1-
