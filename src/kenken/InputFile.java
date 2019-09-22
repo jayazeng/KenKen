@@ -126,7 +126,7 @@ public class InputFile {
 			System.out.println(e.getMessage());
 			
 		}			
-			System.out.print("end");
+			System.out.print("File Imported");
 		}  // end of constructor
 	
 	
@@ -143,16 +143,42 @@ public class InputFile {
 		
 		int lineLength = line.length(); // need to check the line length to know where to find the operator
 		
-		String op = (line.substring(lineLength-1)); // finds the operator
+		String op = parseOp(lineLength,line,"op"); // line.substring(lineLength-1) finds the operator
 		
-		int total = (Integer.parseInt(line.substring(2,lineLength-1))); // finds the total value
+		int total = Integer.parseInt(parseOp(lineLength,line,"total")); // finds the total value
 		
 		cages.get(line.substring(0,1)).op = op; // inserts eachCage into hashtable(cages) if its not there
 		
 		cages.get(line.substring(0,1)).total = total;
 		
 	}
+	
+	private String parseOp(int lineLength, String line, String type) {
+		
+		
+		if(type=="op" && !Character.isDigit(line.charAt(lineLength-1))) {
+	
+			
+			return line.substring(lineLength-1);
+		} else
+		if(type=="op" && Character.isDigit(line.charAt(lineLength-1))) {
+	
+			
+			return "=";
+		}
+		
+		
+		if(type=="total" && !Character.isDigit(line.charAt(lineLength-1))) {
+			
+			return line.substring(2,lineLength-1);
+		} 
+		
+		return line.substring(2);
+	}
 	 
+	
+		
+	
 
 	
 }
