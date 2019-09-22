@@ -14,34 +14,6 @@ public class SimpleBackTrack {
 		currentNode = tree.getRoot();
 	}
 
-	/*
-	public boolean solve(int x, int y, int test) {
-		if (completed) {
-			return true;
-		}
-		while (test <= n) {
-			if(checkConstraints(test,x,y)) { // checks to see if the value will work
-				iterations++; // update iterations
-				finalSolution[x][y] = test; // set value equal
-				if (x == n-1 && y == n-1) { // if reached end return true
-					completed = true;
-					return true;
-				}
-				if (y < n - 1 && solve(x,y+1, test)) { // check next cell
-					return true;
-				} 
-				else if (y == n-1 && x < n && solve(x+1,0, test)){ // check next cell if have to switch rows
-					return true;
-				}
-				else {
-					finalSolution[x][y] = 0; // else change everything to 0
-				}
-			}
-			test++; // try with another test value
-		}
-		return false;
-	}*/
-
 	// using search tree to search
 	public void trySearch() {
 		/*
@@ -131,8 +103,12 @@ public class SimpleBackTrack {
 
 	//Constraints method
 	protected boolean checkConstraints(int value) { //checks all the constraints
-		if (checkRow(value) && checkColumn(value) && checkOperation(value)) {
-			return true;
+		if (checkRow(value)) {
+			if (checkColumn(value)) {
+				if (checkOperation(value)) {
+					return true;
+				}
+			}
 		}
 		return false;
 	}
@@ -176,6 +152,13 @@ public class SimpleBackTrack {
 		//get operation total and set the actualtotal variable to the test value
 		int opTotal = cage.getTotal();
 		int actualTotal = value;
+		if (cage.getOp().equals("=")) { // for single cells
+			if (opTotal == actualTotal) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 		for (int index = 0; index < cage.locales.size(); index++ ) { //test all the points in the cage
 
 			int otherX =  cage.getLocalesX(index); //get x for final array **** Ced's Version
@@ -183,8 +166,11 @@ public class SimpleBackTrack {
 			int otherY =  cage.getLocalesY(index); // get y for final array **** Ced's Version
 
 			int findNode = otherY + (otherX-1) * n;
-			if (findNode > depth) {
-				return true;
+			if (findNode >= depth) {
+				if (index == 0) {
+					return true;
+				}
+				break;
 			}
 			if (tree.getNodeAtDepth(findNode) != null) { // check to see if this node has been created
 				int val = tree.getNodeAtDepth(findNode).getValue(); // val of point listed in cage
@@ -198,8 +184,18 @@ public class SimpleBackTrack {
 							return false;
 						}
 					}
+					return true;
 				} else if (cage.getOp().equals("-")) { // if subtraction
-					actualTotal = Math.abs(actualTotal - val);
+					if (Math.abs(actualTotal - val) == opTotal) {
+						return true;
+					}
+					return false;
+				}
+				if (index == cage.locales.size()-1) {
+					if (actualTotal != opTotal) {
+						return false;
+					}
+					return true;
 				}
 			}
 		}
@@ -208,6 +204,6 @@ public class SimpleBackTrack {
 		}
 		return true; // this will return true if actual total is less than or equal expected total
 	}
-	
+
 
 }
