@@ -71,7 +71,7 @@ public class LocalSearch {
 		if(completed) {
 			return true;
 		}
-		for (int iteration = 0; iteration < 1000000; iteration++) { //Runs 1000000 iterations before stopping
+		for (int iteration = 0; iteration < 1000; iteration++) { //Runs 1000000 iterations before stopping
 			//inner loop goes here
 			
 			// check how many violations there are total and then when that equals 0 return true?
@@ -115,9 +115,9 @@ public class LocalSearch {
 	}
 	
 //Printing Solution from LocalSearch
-	public void printSolution(int[][] solution) {
-		for(int x = 0; x < solution.length; x++) {
-			for(int y = 0; y < solution.length; y++) {
+	public void printSolution() {
+		for(int x = 0; x < n; x++) {
+			for(int y = 0; y < n; y++) {
 				System.out.print(finalSolution[x][y]+ " ");
 			}
 			System.out.println();
@@ -173,14 +173,18 @@ public class LocalSearch {
 			
 			int val = finalSolution[otherX][otherY]; //val of point listed in cage
 			if (val != 0) { //if value has been declared in solution run the code, otherwise it doesn't matter
-				if (cage.getOp().contentEquals("+")) {//if addition
+				if (cage.getOp().equals("+")) { // if addition
 					actualTotal += val;
-				}else if (cage.getOp().contentEquals("*")) {
+				} else if (cage.getOp().equals("*")) { // if multiplication
 					actualTotal *= val;
-				}else if (cage.getOp().contentEquals("/")) {
-					actualTotal /= val;
-				}else if (cage.getOp().contentEquals("-")) {
-					actualTotal -= val;
+				} else if (cage.getOp().equals("/")) { // if division
+					if (actualTotal % val != 0) {
+						if (val % actualTotal != 0) {
+							 toReturn++;
+						}
+					}
+				} else if (cage.getOp().equals("-")) { // if subtraction
+					actualTotal = Math.abs(actualTotal - val);
 				}
 			}
 		}
