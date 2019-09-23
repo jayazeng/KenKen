@@ -13,16 +13,6 @@ public class SearchTree {
 		root.setParent(null);
 	}
 	
-	// returns number of total nodes traversed by tree
-	public int getNumOfNodes(Node root) {
-		int count = 0;
-		if (root.getChildren().size() != 0) {
-			for (Node child: root.getChildren()) {
-				count += getNumOfNodes(child);
-			}
-		}
-		return count;
-	}
 	//get height of search tree and when that is equal to n*n, we've found all the values
 	public int getDepth() {
 		Node traverse = this.root;
