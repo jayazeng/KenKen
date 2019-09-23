@@ -5,8 +5,8 @@
  * 		3. Iterations guided by objective function --> moving towards goal solution value (no violation of constraints)
  * 		4. Each iteration, choose any conflicted variable and reassign value to reduce violated constraint
  */
-	
-	
+
+
 /* PseudoCode/Brainstorming for Local Search
  * 	1. Set up cage
  * 	2. Random numbers (1-n) assigned for N*N
@@ -28,104 +28,165 @@
  *  
  *  7. Print the solution with no violations
  */
- 
+
 
 package kenken;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 public class LocalSearch {
 	private int[][] finalSolution; //2D int array to hold the solution
 	int n; //length and width of array
-	private boolean completed;
 	private int iterations; //number of nodes accessed
 	private InputFile input; //input file that will have all the data 
-	
+
 	public LocalSearch(InputFile file) {
-		completed = false;
 		iterations = 0;
 		input = file;
 		n = file.n;
-		finalSolution = new int[n][n];
-		
+		finalSolution = new int[n+1][n+1];
+
 	}
-	
-	
-/*Brainstorm on creating LocalSearch Loop
- *  
- *  Loop inside a loop:
- *  Inner Loop:
- *  Find number of violations on the randomly assigned board
- *  	Lets say # of violations is 10. 
- *  	If # violation is > 0
- *  		Then change the values on the board 
- *  				i.e. random cell if flip-flopped
- *  			After the flop, if new number of violation is less than previous number, loop end
- *  			if not, it re enters the loop and does another flip flop until it finds less violations.   
- *  End of iteration - Print # of violations 
- *  If current # violations < previous # violations, then exit loop and one iteration is done. 
- *  
- */
-	
-//LocalSearch Method
+
+
+	/*Brainstorm on creating LocalSearch Loop
+	 *  
+	 *  Loop inside a loop:
+	 *  Inner Loop:
+	 *  Find number of violations on the randomly assigned board
+	 *  	Lets say # of violations is 10. 
+	 *  	If # violation is > 0
+	 *  		Then change the values on the board 
+	 *  				i.e. random cell if flip-flopped
+	 *  			After the flop, if new number of violation is less than previous number, loop end
+	 *  			if not, it re enters the loop and does another flip flop until it finds less violations.   
+	 *  End of iteration - Print # of violations 
+	 *  If current # violations < previous # violations, then exit loop and one iteration is done. 
+	 *  
+	 */
+
+	//LocalSearch Method
 	public boolean search() {
-		if(completed) {
-			return true;
-		}
-		for (int iteration = 0; iteration < 1000; iteration++) { //Runs 1000000 iterations before stopping
+		initial();
+		for (iterations = 0; iterations < 10000; iterations++) { //Runs 1000000 iterations before stopping
 			//inner loop goes here
-			
+
 			// check how many violations there are total and then when that equals 0 return true?
-			
+
 			//get random 2 cells and swap them
+
 			int x1 = getRandom();
 			int y1 = getRandom();
+			
+			// Maybe find the cell with the most constraints and try to start from there
+			/*
+			if (mostViolations() != null) {
+				String point = mostViolations();
+				x1 = Integer.parseInt(point.substring(0, 1));
+				y1 = Integer.parseInt(point.substring(n-1));
+			}
+			*/
+
 			int x2 = getRandom();
 			int y2 = getRandom();
+			
+			// Maybe find the best possible swap that can happen
+			/*
+			if (possibleSwap(finalSolution[x1][y1], checkConstraints(finalSolution[x1][y1], x1, y1)) != null) {
+				String swapPoint = possibleSwap(finalSolution[x1][y1], checkConstraints(finalSolution[x1][y1], x1, y1));
+				x2 = Integer.parseInt(swapPoint.substring(0, 1));
+				y2 = Integer.parseInt(swapPoint.substring(n-1));
+			}
+			*/
+			
 			int originalViolations = checkConstraints(finalSolution[x1][y1], x1, y1) + checkConstraints(finalSolution[x2][y2], x2, y2);
 			int newViolations = checkConstraints(finalSolution[x2][y2], x1, y1) + checkConstraints(finalSolution[x1][y1], x2, y2);
+			
 			if (newViolations < originalViolations) {
 				int swap = finalSolution[x1][y1];
 				finalSolution[x1][y1] = finalSolution[x2][y2];
 				finalSolution[x2][y2] = swap; 
+			} else {
+				iterations--;
 			}
-			
+			if (completed()) {
+				break;
+			}
+
 		}
 		return false;
 	}
-	
+
 	// create a random integer
 	public int getRandom() {
-		int random = (int) (Math.random() * ((n - 1) + 1)) + 1;
+		int random = (int) (Math.random() * ((n))) + 1;
 		return random;
 	}
-// populating solution with random integers
-	
+	// populating solution with random integers
+
 	public void initial() {
 		ArrayList<Integer> values = new ArrayList<Integer>(n);
 		for (int val = 1; val <= n; val++) {
 			values.add(val);
 		}
-		for (int x = 0; x < n; x++) {
-			for (int y = 0; y < n; y++) {
-				finalSolution[x][y] = values.get(y);
+		for (int x = 1; x <= n; x++) {
+			for (int y = 1; y <= n; y++) {
+				finalSolution[x][y] = values.get(y-1);
 			}
 			values.add(0,values.get(n-1));
 			values.remove(n);
 		}
 	}
-	
-//Printing Solution from LocalSearch
+
+	//Printing Solution from LocalSearch
 	public void printSolution() {
-		for(int x = 0; x < n; x++) {
-			for(int y = 0; y < n; y++) {
+		for(int x = 1; x <= n; x++) {
+			for(int y = 1; y <= n; y++) {
 				System.out.print(finalSolution[x][y]+ " ");
 			}
 			System.out.println();
 		}
+		System.out.println(iterations);
 	}
-	
-	
-//Constraint Method (should be same as BackTrack) - VIOLATIONS OF CONSTRAINTS 
+
+	// Check to see if puzzle is completed
+	public boolean completed() {
+		for (int x = 1; x <= n; x++) {
+			for (int y = 1; y <= n; y++) {
+				if (checkConstraints(finalSolution[x][y], x, y) != 0) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	// returns the point with the most violations
+	public String mostViolations() {
+		String point = null;
+		int violations = 0;
+		for (int x = 1; x <= n; x++) {
+			for (int y = 1; y <= n; y++) {
+				if (checkConstraints(finalSolution[x][y], x, y) > violations ) {
+					point = x+"." + y;
+					violations = checkConstraints(finalSolution[x][y],x,y);
+				}
+			}
+		}
+		return point;
+	}
+
+	public String possibleSwap(int test, int violations) {
+		String point = null;
+		for (int x = 1; x <= n; x++) {
+			for (int y = 1; y <= n; y++) {
+				if (checkConstraints(test, x, y) < violations ) {
+					point = x+"." + y;
+					return point;
+				}
+			}
+		}
+		return point;
+	}
+	//Constraint Method (should be same as BackTrack) - VIOLATIONS OF CONSTRAINTS 
 	protected int checkConstraints(int value, int x, int y) {
 		int violations = 0;
 		violations += checkRow(x,y,value);
@@ -133,11 +194,11 @@ public class LocalSearch {
 		violations += checkOperations(x,y,value);
 		return violations;
 	}
-	
+
 	//CONSTRAINT 1 - check each row for no repeated number
 	private int checkRow(int x, int y, int value) {
 		int toReturn = 0;
-		for (int col = 0; col < y ; col ++) {
+		for (int col = 1; col <= y ; col ++) {
 			if(finalSolution[x][col] == value) {
 				toReturn++;
 			}
@@ -147,7 +208,7 @@ public class LocalSearch {
 	//CONSTRAINT 2 - check each column for now repeated number
 	private int checkColumn(int x, int y, int value) {
 		int toReturn = 0;
-		for (int row = 0; row < x; row++) {
+		for (int row = 1; row <= x; row++) {
 			if(finalSolution[row][y] == value){
 				toReturn++;
 			}
@@ -158,11 +219,19 @@ public class LocalSearch {
 	private int checkOperations(int x, int y, int value) {
 		int toReturn = 0;
 		//get cage
-		String lookup = "(" + x + "," + y + ")";
+		String point = "(" + x + "," + y + ")";
+		String lookup = input.cageLookup.get(point);
 		Cage cage = input.cages.get(lookup);
 		//get operation total and set the actual total variable to the test value
 		int opTotal = cage.getTotal();
 		int actualTotal = value;
+		if (cage.getOp().equals("=")) { // for single cells
+			if (opTotal == actualTotal) {
+				return 0;
+			} else {
+				return toReturn++;
+			}
+		}
 		for (int index = 0; index < cage.locales.size(); index++) { //test all points of the cage
 
 			//			int otherX = (int) cage.locales.get(index).getX(); //get x for final array
@@ -170,7 +239,7 @@ public class LocalSearch {
 
 			//			int otherY = (int) cage.locales.get(index).getY(); //get y for final array
 			int otherY = (int) cage.getLocalesY(index); //get y for final array   **** Ced's Version
-			
+
 			int val = finalSolution[otherX][otherY]; //val of point listed in cage
 			if (val != 0) { //if value has been declared in solution run the code, otherwise it doesn't matter
 				if (cage.getOp().equals("+")) { // if addition
@@ -180,11 +249,13 @@ public class LocalSearch {
 				} else if (cage.getOp().equals("/")) { // if division
 					if (actualTotal % val != 0) {
 						if (val % actualTotal != 0) {
-							 toReturn++;
+							return toReturn++;
 						}
 					}
 				} else if (cage.getOp().equals("-")) { // if subtraction
-					actualTotal = Math.abs(actualTotal - val);
+					if (Math.abs(actualTotal - val) != opTotal) {
+						return toReturn++;
+					}
 				}
 			}
 		}
@@ -193,20 +264,20 @@ public class LocalSearch {
 		}
 		return toReturn; //this will return number of violations
 	}
-	
-	
-public int getIterations() {
-	return iterations;
-}
-	
-	
-	
-	
 
 
-	
-	
-	
+	public int getIterations() {
+		return iterations;
+	}
+
+
+
+
+
+
+
+
+
 
 }
 
