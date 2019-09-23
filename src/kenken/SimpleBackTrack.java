@@ -147,7 +147,7 @@ public class SimpleBackTrack {
 		//get cage
 		String point = "("+ getX(currentNode)+ "," + getY(currentNode) + ")";
 		String lookup = input.cageLookup.get(point);
-		int depth = tree.getDepthOfNode(currentNode);
+		int depth = tree.getDepthOfNode(currentNode) + 1;
 		Cage cage = input.cages.get(lookup);
 		//get operation total and set the actualtotal variable to the test value
 		int opTotal = cage.getTotal();
@@ -179,12 +179,12 @@ public class SimpleBackTrack {
 				} else if (cage.getOp().equals("*")) { // if multiplication
 					actualTotal *= val;
 				} else if (cage.getOp().equals("/")) { // if division
-					if (actualTotal % val != 0) {
-						if (val % actualTotal != 0) {
-							return false;
-						}
+					if (actualTotal / val == opTotal) {
+						return true;
+					} if (val / actualTotal == opTotal) {
+						return true;
 					}
-					return true;
+					return false;
 				} else if (cage.getOp().equals("-")) { // if subtraction
 					if (Math.abs(actualTotal - val) == opTotal) {
 						return true;
