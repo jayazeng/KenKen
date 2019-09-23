@@ -6,6 +6,7 @@ public class SimpleBackTrack {
 
 	private SearchTree tree;
 	private Node currentNode;
+	private int nodesCreated;
 
 	public SimpleBackTrack(InputFile file) {
 		input = file;
@@ -26,17 +27,10 @@ public class SimpleBackTrack {
 			tree.printTree();
 			if (backtrack() != 0) { // check if there is a possible value
 				currentNode.addChild(backtrack()); // add the value into the tree
-				if (currentNode.getLastChild() == null) {
-					System.out.println("Debuger");
-				}
+				nodesCreated++;
 				currentNode = currentNode.getLastChild(); // switch the node and start looking for next value
 			} else { // otherwise go back up and start from the previous node
-				if (currentNode.getParent() == null) {
-					System.out.println("Debuger");
-					break;
-				} else {
-					currentNode = currentNode.getParent();
-				}
+				currentNode = currentNode.getParent();
 			}
 		}
 
@@ -73,6 +67,7 @@ public class SimpleBackTrack {
 			}
 			System.out.println();
 		}
+		System.out.println(nodesCreated);
 	}
 
 	// get x coordinate of cell
