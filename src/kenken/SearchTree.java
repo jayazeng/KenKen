@@ -5,10 +5,8 @@ package kenken;
  */
 public class SearchTree {
 	private Node root;
-	private int n;
 
 	public SearchTree(int n) {
-		this.n = n;
 		root = new Node(n);
 		root.setParent(null);
 	}

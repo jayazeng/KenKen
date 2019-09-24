@@ -2,11 +2,11 @@ package kenken;
 
 public class SimpleBackTrack {
 	int n; // length and width of array
-	private InputFile input; // inputfile that will have all the data
+	private InputFile input; // input file that will have all the data
 
 	private SearchTree tree;
-	private Node currentNode;
-	private int nodesCreated;
+	private Node currentNode; // node used to traverse through the tree
+	private int nodesCreated; // number of nodes created
 
 	public SimpleBackTrack(InputFile file) {
 		input = file;
@@ -24,10 +24,9 @@ public class SimpleBackTrack {
 		 * 
 		 */
 		while (tree.getDepth() <= n*n) { // keep it running until we get a solution
-			tree.printTree();
 			if (backtrack() != 0) { // check if there is a possible value
 				currentNode.addChild(backtrack()); // add the value into the tree
-				nodesCreated++;
+				nodesCreated++; // update how many nodes were created
 				currentNode = currentNode.getLastChild(); // switch the node and start looking for next value
 			} else { // otherwise go back up and start from the previous node
 				currentNode = currentNode.getParent();
@@ -45,7 +44,7 @@ public class SimpleBackTrack {
 			}
 			test++; // try with another test value
 		}
-		return 0;
+		return 0; // else return 0 which will trigger the else statement in trySearch()
 	}
 
 	// this will check the parent's other children to see if you've tested the value before or not
@@ -58,21 +57,25 @@ public class SimpleBackTrack {
 		return true;
 	}
 
-	public void printSolution() { //print solution in matrix form 
+	//print solution in matrix form
+	public void printSolution() {  
+		System.out.println();
 		Node traverse = tree.getRoot();
+		// traverses the tree
 		for (int x =0; x < n; x++) {
-			for (int y =0; y < n; y++) {
+			for (int y =0; y < n; y++) { 
 				traverse = traverse.getLastChild();
 				System.out.print(traverse.getValue()+" ");
 			}
 			System.out.println();
 		}
-		System.out.println(nodesCreated);
+		// print the number of nodes created
+		System.out.println(nodesCreated); 
 	}
 
 	// get x coordinate of cell
 	public int getX(Node n) {
-		int depth = tree.getDepthOfNode(n) + 1; //have to plus one because we're looking for the next node
+		int depth = tree.getDepthOfNode(n) + 1; //have to plus one because we're looking for the next cell
 		if (depth > 0) {
 			int x = (int) Math.floor(depth / this.n);
 			if (depth % this.n != 0) {
@@ -85,7 +88,7 @@ public class SimpleBackTrack {
 
 	// get y coordinate of cell
 	public int getY(Node n) {
-		int depth = tree.getDepthOfNode(n) + 1; // have to plus one because we're looking for the next node
+		int depth = tree.getDepthOfNode(n) + 1; // have to plus one because we're looking for the next cell
 		if (depth > 0) {
 			int y = (int) depth % this.n;
 			if (y == 0) {
@@ -111,7 +114,7 @@ public class SimpleBackTrack {
 	// check the row for the same number
 	private boolean checkRow(int value) {
 		Node traverse = currentNode;
-		for (int i = 1; i < getY(currentNode); i++) { // this will make the node only go back to the beginning of the row
+		for (int i = 1; i < getY(currentNode); i++) { // this will make the node only go back to the first cell of the row
 			if (traverse.getValue()  == value) {
 				return false;
 			}
@@ -128,7 +131,7 @@ public class SimpleBackTrack {
 	private boolean checkColumn(int value) {
 		int depth = tree.getDepthOfNode(currentNode) + 1;
 		depth -= n;
-		while (depth > 0) { // use colUp to get the node that is n cells before it, thus a column up
+		while (depth > 0) { // keep subtracting n from depth until it becomes a negative number to get all cells in column
 			if (tree.getNodeAtDepth(depth).getValue() == value) {
 				return false;
 			}
@@ -139,61 +142,84 @@ public class SimpleBackTrack {
 
 	// check to see if values + op get the total needed once all areas are filled
 	private boolean checkOperation(int value) {
-		//get cage
+		//get partition of cell
 		String point = "("+ getX(currentNode)+ "," + getY(currentNode) + ")";
 		String lookup = input.cageLookup.get(point);
-		int depth = tree.getDepthOfNode(currentNode) + 1;
 		Cage cage = input.cages.get(lookup);
-		//get operation total and set the actualtotal variable to the test value
+
+		//get operation total and set the actual total variable to the test value
 		int opTotal = cage.getTotal();
 		int actualTotal = value;
-		if (cage.getOp().equals("=")) { // for single cells
+
+		// Single cells don't need to look further in the cage
+		if (cage.getOp().equals("=")) { 
 			if (opTotal == actualTotal) {
 				return true;
 			} else {
 				return false;
 			}
 		}
-		for (int index = 0; index < cage.locales.size(); index++ ) { //test all the points in the cage
+		
+		// get the depth of the cell you are looking for
+		int depth = tree.getDepthOfNode(currentNode) + 1; 
 
-			int otherX =  cage.getLocalesX(index); //get x for final array **** Ced's Version
+		//test all the cells in the partition
+		for (int index = 0; index < cage.locales.size(); index++ ) { 
 
-			int otherY =  cage.getLocalesY(index); // get y for final array **** Ced's Version
+			// get x and y coordinates of the cell in the partition
+			int otherX =  cage.getLocalesX(index); 
+			int otherY =  cage.getLocalesY(index); 
 
-			int findNode = otherY + (otherX-1) * n;
-			if (findNode >= depth) {
-				if (index == 0) {
+			// this will get the depth of the cell based off the x and y
+			int otherDepth = otherY + (otherX-1) * n; 
+
+			// since the only cells that have values are the ones before, any cell 
+			// that needs to be checked will have a lower depth 
+			if (otherDepth >= depth) { 
+				if (index == 0) { // 
 					return true;
 				}
 				break;
 			}
-			if (tree.getNodeAtDepth(findNode) != null) { // check to see if this node has been created
-				int val = tree.getNodeAtDepth(findNode).getValue(); // val of point listed in cage
-				if (cage.getOp().equals("+")) { // if addition
-					actualTotal += val;
-				} else if (cage.getOp().equals("*")) { // if multiplication
-					actualTotal *= val;
-				} else if (cage.getOp().equals("/")) { // if division
-					if (actualTotal / val == opTotal) {
-						return true;
-					} if (val / actualTotal == opTotal) {
-						return true;
-					}
-					return false;
-				} else if (cage.getOp().equals("-")) { // if subtraction
-					if (Math.abs(actualTotal - val) == opTotal) {
-						return true;
-					}
-					return false;
-				}
-				if (index == cage.locales.size()-1) {
-					if (actualTotal != opTotal) {
-						return false;
-					}
+			// value of cell listed in partition
+			int val = tree.getNodeAtDepth(otherDepth).getValue(); 
+
+			// Division and Subtraction only have two cells in the partition 
+			// so this would check if the second cell of the partition works
+			if (cage.getOp().equals("/")) { // if division
+				if (actualTotal / val == opTotal) {
+					return true;
+				} if (val / actualTotal == opTotal) {
 					return true;
 				}
+				return false;
+			} 
+			if (cage.getOp().equals("-")) { // if subtraction
+				if (Math.abs(actualTotal - val) == opTotal) {
+					return true;
+				}
+				return false;
+			}
+			// if addition
+			if (cage.getOp().equals("+")) { 
+				actualTotal += val;
+			} 
+			// if multiplication
+			if (cage.getOp().equals("*")) { 
+				actualTotal *= val;
+			}
+			
+			// if you are checking the last cell in the partition
+			// the values should match up, otherwise you're wrong
+			if (index == cage.locales.size()-1) {
+				if (actualTotal != opTotal) {
+					return false;
+				}
+				return true;
 			}
 		}
+		
+		// after iterating through all the solved cells in the partition without completing the partition
 		if (actualTotal > opTotal) { // check if actual total will be greater than expected total
 			return false;
 		}
