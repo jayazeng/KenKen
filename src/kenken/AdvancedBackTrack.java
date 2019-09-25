@@ -1,10 +1,11 @@
 /* This class controls the Advanced Back Track algorithm which is a subclass or extension of SimpleBackTrack.
- * First we establish a hashtable to store a cage letter <key> and a set of potential numbers which fit the total 
- * and operator constraint.  This is done before the algorithm solves the puzzle.
+ * First we establish a hashtable to store a cage coordinate <key> and a set of potential numbers which fit the total 
+ * and operator constraint.  This is done before the algorithm solves the puzzle.  We call this preCheck.
  * 
- * We use an ARC Consistency to eliminate the domains prior to running the solve algorithm.
+ * After preCheck, the puzzle will start at single cell cages and reduce the set of numbers in the domain, making
+ * the domain even smaller.
  * 
- * Our forward checking algorithm
+ * 
  */
 
 package kenken;
@@ -16,17 +17,17 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 	
 	private InputFile input; // inputfile that will have all the data
 
-	String op;
+	String op;  //short for operator
 	
-	String letter;
+	String letter;  // cage letter from game board
 	
-	int n;
+	int n; //size of the game board in one dimension
 	
-	int cageTotal;
+	int cageTotal;  // total the cage is trying to equal to
 	
-	ArrayList<Object> tmp; 
+	ArrayList<Object> tmp; // temporary array
 	
-	Hashtable<String,ArrayList<Object>> cageDomain = new Hashtable<String,ArrayList<Object>>(); //Collection - letter as key and Cage Total & Domain
+	Hashtable<String,ArrayList<Object>> cageDomain = new Hashtable<String,ArrayList<Object>>(); //Collection - coordinate as key and set of numbers or Domain
 	
 	public AdvancedBackTrack(InputFile file) {
 		super(file);
@@ -46,8 +47,8 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 	
 
 	 
-	// Inputs a cell location , total, operator and dimension size (n) and determines 
-	// possible values for each cage.
+	// method takes the input which consist of the all the hashtables and game information
+	// from the InputFile class
 	public void preCheck(InputFile input) {
 		
 		String key;
@@ -59,13 +60,13 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		for(int i = 1; i <= n;i++) {
 			for(int j = 1;j<=n;j++) {
 	
-				tmp = new ArrayList<Object>(15);
+				tmp = new ArrayList<Object>(15);  // size of array, shouldn't be more than 15 in size
 				
-				key = "("+i+","+j+")";
+				key = "("+i+","+j+")";  // coordinate of cell starting at (1,1)
 				
-				letter = input.cageLookup.get(key);
+				letter = input.cageLookup.get(key); // cage letter
 				
-				cageTotal = input.cages.get(letter).getTotal();
+				cageTotal = input.cages.get(letter).getTotal(); // number we want to achieve
 				
 				op = input.cages.get(letter).getOp();
 				
