@@ -4,9 +4,9 @@ public class SimpleBackTrack {
 	int n; // length and width of array
 	private InputFile input; // input file that will have all the data
 
-	private SearchTree tree;
-	private Node currentNode; // node used to traverse through the tree
-	private int nodesCreated; // number of nodes created
+	public SearchTree tree;
+	public Node currentNode; // node used to traverse through the tree
+	protected int nodesCreated; // number of nodes created
 
 	public SimpleBackTrack(InputFile file) {
 		input = file;

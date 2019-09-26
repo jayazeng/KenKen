@@ -24,88 +24,122 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 	int n; //size of the game board in one dimension
 
 	int cageTotal;  // total the cage is trying to equal to
+	
+	String nextCoord; // for the next coordinate used for 
 
 	ArrayList<Object> tmp; // temporary array
 
 	Hashtable<String,ArrayList<Object>> cageDomain = new Hashtable<String,ArrayList<Object>>(); //Collection - coordinate as key and set of numbers or Domain
 
-	SearchTree tree;
-	Node currentNode;
+	int [][] solution,tempSol;  // this creates the matrix n x n
 	
-	// Here's the method for finding the cage op
-	public void findSingle() {
-		for (Cage cage : input.cages.values()) {
-			if (cage.getOp().equals("=")) {
-				int x  = cage.getLocalesX(0);
-				int y = cage.getLocalesY(0);
-				//solution[x][y] = cage.getTotal();
-			}
-		}
-	}
+//	SearchTree tree;
+//	Node currentNode;
 	
+	//Constructor that takes InputFile
 	public AdvancedBackTrack(InputFile file) {
 		super(file);
 
 		input = file;
 
-		n = input.n;
+		n = input.n; 
+		
+		solution  = new int[n][n];
+		tempSol = new int[n][n];
 
 		preCheck(input);
-
+		
+		// finds the single cages with ='s
+		findSingle();
+		
+		Hashtable<String,ArrayList<Object>> tempDomain = cageDomain;
+		
+		nextCoord = findNextLowest(tempDomain);
+		
+		forwardCheck(nextCoord, tempDomain);
 
 		System.out.print("hello");
 
 	}
-
-	// method uses the cageDomain and tmp variables to test if a testValue placed in a certain cell 
-	// will cause another cell further in the puzzle to not have a value
-	// if it does, then the method returns false and if it doesn't the method returns true
-	public boolean forwardCheck(int testValue) {
-
-		// create a temporary array lists to list all possible values that can be updated in the method only
-		ArrayList<Object> temp = new ArrayList<Object>(cageDomain.values());
-
-		// traverse through the created search tree and add the previous values if there are any 
-		Node traverse = tree.getRoot(); 
-		int index = 0;
-		while (traverse != currentNode) {
-			temp.set(index, traverse.getLastChild().getValue());
-			traverse = traverse.getLastChild();
-			index++;
+	
+	// Here's the method for finding the cage op
+	public void findSingle() {
+		for (Cage cage : input.cages.values()) {
+			if (cage.getOp().equals("=")) {
+				
+				int x  = cage.getLocalesX(0);
+				
+				int y = cage.getLocalesY(0);
+				
+				// put into solutions array
+				solution[x-1][y-1] = cage.getTotal();
+				tempSol[x-1][y-1] = solution[x-1][y-1];
+				// change cage operator from '=' into '$' to ignore when ran again
+				cage.setOp("$");
+				
+				String coord = "(" + x + "," + y + ")";
+				
+				cellReduction(coord,cageDomain);
+			} 	
+	
 		}
-
-		// this will get the cell number of the cell we are looking at
-		int cellNum = this.tree.getDepthOfNode(currentNode) + 1; 
 		
-		// set the testValue in the temp list and correct index, but since it's an arraylist and starts at 0, subtract 1 from the cellNum
-		temp.set(cellNum-1, testValue);
-
-		// now the temp array should contain single values to represent the cell values already chosen
-		// and list of possible values for cells not initialized yet
-
-		// go through and remove the possible values based on row
-		// can use the subList(int fromIndex, int toIndex) to get just the row
-
-		// go through and remove the possible values based on column
-		// use the fact that the col index should be a difference of n from the index
-
-		// no need to go through and remove the possible values based on operation
-
-		// check to see if any list is empty, and if it is return false
-		// else return true
-		return true;
 	}
-
-
-
+	
+	
+	// returns the coordinates for the smallest domain, other than single cells
+	public String findNextLowest(Hashtable<String,ArrayList<Object>> table) {  
+		
+		int i;
+		int j;
+		String tmpCoord;
+		int mcv = n;
+		int size = n;
+		String mcvCoord = null;
+		
+		for(i=n;i >0 ;i--) {
+			
+			for(j= n; j >0; j--) {
+				
+				tmpCoord  = "("+i+","+j+")";  // assigns a temp coordinate
+				
+				size = table.get(tmpCoord).size();  // checks the size of the coordinate
+				
+				String letter = input.cageLookup.get(tmpCoord);
+				
+				String op = input.cages.get(letter).op;
+				
+				if(mcv >=  size && mcv >= 1 && tempSol[i-1][j-1]==0) {  // ensures the value is lower than n, greater than 1 and not a size of 1
+				
+					mcv = size;
+					
+					mcvCoord = tmpCoord;
+					
+				}
+				
+			}
+			
+		}
+		
+		System.out.println("Next lowest mcv is "+ mcvCoord + " at " + mcv + " coordinates");
+		
+		if(mcvCoord == null) {
+			
+			solution = tempSol;
+			
+			return null;
+		}
+		
+		
+		return mcvCoord;
+	}		
+				
 	// method takes the input which consist of the all the hashtables and game information
 	// from the InputFile class
 	public void preCheck(InputFile input) {
 
 		String key;
 		String letter;
-
-
 
 
 		for(int i = 1; i <= n;i++) {
@@ -201,8 +235,205 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 			}}  //end of i & j loop
 
 
-		System.out.print("Cedric");
+		
 
 	} //end of preCheck
+	
+	
+	// input successful coordinate
+	public String cellReduction(String coord, Hashtable<String,ArrayList<Object>> table) {
+		
+		//get row and set row
+		int row = Integer.parseInt(coord.substring(1,2));
+		
+		//get col  and set col
+		int col= Integer.parseInt(coord.substring(3,4));
+		
+		// need to check if there is a number there
+		int value = (int) table.get(coord).get(0);
+		
+		int index;
+		
+		//remove value from col's domain
+		for(int r= 1;r<=n;r++) {
+			
+			String key = createCoord(r,col);
+			
+			if(!key.equals(coord) && tempSol[r-1][col-1]==0) {
+			
+			index = table.get(key).indexOf(value);
+			
+			if(index != -1) {
+			
+			table.get(key).remove(index);
+			
+			System.out.println("Removed " + value + " from domain at " + key);
+			}
+			
+		}
+		
+			
+		}
+		//remove value from row's domain
+		for(int c= 1;c<=n;c++) {
+			
+			String key = createCoord(row,c);
+			
+			if(!key.equals(coord) && tempSol[row-1][c-1]==0) {
+			
+			index = table.get(key).indexOf(value);
+			
+			if(index != -1) {
+			
+			table.get(key).remove(index);
+			
+			System.out.println("Removed " + value + " from domain at " + key);
+			
+			}
+			
+		}
+		
+		}
+		
+		return null;
+		
+	}
+	
+
+	
+	public String createCoord(int x, int y) {
+		
+		String ans = "("+x+","+ y + ")";
+		
+		return ans;
+	}
+	
+	
+	public int getX(String coord) {
+		
+		int x = Integer.parseInt(coord.substring(1,2));
+		
+		
+		return x;
+	}
+	
+	public int getY(String coord) {
+		
+		int y = Integer.parseInt(coord.substring(3, 4));
+		
+		return y;
+	}
+
+	
+	public String reverseCoord(int k) {
+		
+		int q,r;
+		
+		q = k/input.n;
+		
+		r = k%input.n;
+		
+		return createCoord(q,r);	
+		
+	}
+	
+	
+	// Ced Forward Check
+	
+	// method uses the cageDomain and tmp variables to test if a testValue placed in a certain cell 
+	// will cause another cell further in the puzzle to not have a value
+	// if it does, then the method returns false and if it doesn't the method returns true
+	public boolean forwardCheck(String coord, Hashtable<String,ArrayList<Object>> tempDomain ) {
+
+		if(coord != null) {
+			
+			
+			
+		
+		
+		int x = getX(coord);
+		
+		int y = getY(coord);
+		
+		int index = ((x - 1) * n) + y;
+		
+		// pick 0 index of cell 
+		
+		if(tempDomain.get(coord) != null) {
+		
+			tempSol[x-1][y-1] = (int) tempDomain.get(coord).get(0);
+			
+			// eliminate rows and cols
+			cellReduction(coord, tempDomain);
+			
+			// input the next lowest cell urecursively till exhausted or failed
+			return forwardCheck(findNextLowest(tempDomain),tempDomain);
+
+		}
+		
+		}
+		
+		System.out.println("Finished");
+		
+		return true;
+	}
+
+
+	
+	
+	
+	// Janelle's ForwardCheck
+	// method uses the cageDomain and tmp variables to test if a testValue placed in a certain cell 
+	// will cause another cell further in the puzzle to not have a value
+	// if it does, then the method returns false and if it doesn't the method returns true
+	public boolean forwardCheck2(int testValue ) {
+
+		
+		// create a temporary array lists to list all possible values that can be updated in the method only
+		ArrayList<Object> temp = new ArrayList<Object>(cageDomain.values());
+
+		// traverse through the created search tree and add the previous values if there are any 
+		Node traverse = tree.getRoot(); 
+		
+		// set index
+		int index = 0;
+		
+		
+		while (traverse != currentNode) {
+			temp.set(index, traverse.getLastChild().getValue());  //why are you changing the temp cageDomain which has less possible numbers?
+			traverse = traverse.getLastChild();
+			index++;
+		}
+
+		// this will get the cell number of the cell we are looking at
+		int cellNum = this.tree.getDepthOfNode(currentNode) + 1; 
+		
+		// set the testValue in the temp list and correct index, but since it's an arraylist and starts at 0, subtract 1 from the cellNum
+		temp.set(cellNum-1, testValue);
+
+		// now the temp array should contain single values to represent the cell values already chosen
+		// and list of possible values for cells not initialized yet
+		
+		
+
+		// go through and remove the possible values based on row
+		// can use the subList(int fromIndex, int toIndex) to get just the row
+
+		
+		// go through and remove the possible values based on column
+		// use the fact that the col index should be a difference of n from the index
+
+		
+		// no need to go through and remove the possible values based on operation
+
+		
+		// check to see if any list is empty, and if it is return false
+		// else return true
+		
+		return true;
+	}
+
+
+
 
 }  // end of class
