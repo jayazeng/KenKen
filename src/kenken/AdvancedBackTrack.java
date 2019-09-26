@@ -31,6 +31,8 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 
 	int [][] solution,tempSol;  // this creates the matrix n x n
 	
+	int n; // size
+	
 	
 	//Constructor that takes InputFile
 	public AdvancedBackTrack(InputFile file) {
@@ -40,8 +42,8 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 
 		n = input.n; //assigns the dimension to n
 		
-		solution  = new int[n][n];  // creates a solution array
-		tempSol = new int[n][n];  // creates a temporary solution array
+		solution  = new int[n+1][n+1];  // creates a solution array
+		tempSol = new int[n+1][n+1];  // creates a temporary solution array
 
 		preCheck(input);  // assigns domain values based on the total and the operator 
 		
@@ -49,9 +51,9 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		
 		Hashtable<String,ArrayList<Object>> tempDomain = cageDomain;  // creates hashtable to store temporary cageDomains
 		
-		nextCoord = findNextLowest(tempDomain);  // finds the most constrained cell
+		//nextCoord = findNextLowest(tempDomain);  // finds the most constrained cell
 		
-		forwardCheck(nextCoord, tempDomain); // forward checks 
+		//forwardCheck(nextCoord, tempDomain); // forward checks 
 
 	}
 	
@@ -65,8 +67,8 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 				int y = cage.getLocalesY(0);
 				
 				// put into solutions array
-				solution[x-1][y-1] = cage.getTotal();
-				tempSol[x-1][y-1] = solution[x-1][y-1];
+				solution[x][y] = cage.getTotal();
+				tempSol[x][y] = solution[x][y];
 				// change cage operator from '=' into '$' to ignore when ran again
 				cage.setOp("$");
 				
@@ -102,7 +104,7 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 				
 //				String op = input.cages.get(letter).op;
 				
-				if(mcv >=  size && mcv >= 1 && tempSol[i-1][j-1]==0) {  // ensures the value is lower than n, greater than 1 and not a size of 1
+				if(mcv >=  size && mcv >= 1 && tempSol[i][j]==0) {  // ensures the value is lower than n, greater than 1 and not a size of 1
 				
 					mcv = size;
 					
@@ -252,7 +254,7 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 			
 			String key = createCoord(r,col);
 			
-			if(!key.equals(coord) && tempSol[r-1][col-1]==0) {
+			if(!key.equals(coord) && tempSol[r][col]==0) {
 			
 			index = table.get(key).indexOf(value);
 			
@@ -272,7 +274,7 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 			
 			String key = createCoord(row,c);
 			
-			if(!key.equals(coord) && tempSol[row-1][c-1]==0) {
+			if(!key.equals(coord) && tempSol[row][c]==0) {
 			
 			index = table.get(key).indexOf(value);
 			
@@ -387,17 +389,62 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 	}
 	
 
+	public void trySearch() {
+		/*
+		 * use current node and test for the next cell
+		 * if you find a successful value for the next cell, 
+		 * add it into the tree and update the current node to the next cell
+		 * 
+		 */
+		while (tree.getDepth() <= n*n) { // keep it running until we get a solution
+			if (backtrack() != 0) { // check if there is a possible value
+				currentNode.addChild(backtrack()); // add the value into the tree
+				nodesCreated++; // update how many nodes were created
+				currentNode = currentNode.getLastChild(); // switch the node and start looking for next value
+			} else { // otherwise go back up and start from the previous node
+				currentNode = currentNode.getParent();
+			}
+		}
+
+	}
 	
+	public int advBacktrack() {
+		int test = 1;
+		while (test <= n) {
+			if(checkConstraints(test) && checkPreviousValues(test)) { // checks to see if the value will work
+				return test;
+			}
+			test++; // try with another test value
+		}
+		return 0;
+	}
+	
+	public boolean checkConstraints(int value) {
+		if (forwardCheck2(value)) {
+			if (checkRow(value)) {
+				if (checkColumn(value)) {
+					if (checkOperation(value)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 	// Janelle's ForwardCheck
 	// method uses the cageDomain and tmp variables to test if a testValue placed in a certain cell 
 	// will cause another cell further in the puzzle to not have a value
 	// if it does, then the method returns false and if it doesn't the method returns true
-	public boolean forwardCheck2(int testValue ) {
+	@SuppressWarnings("unchecked")
+	public boolean forwardCheck2(int testValue) {
 
 		
 		// create a temporary array lists to list all possible values that can be updated in the method only
-		ArrayList<Object> temp = new ArrayList<Object>(cageDomain.values());
-
+		ArrayList<ArrayList<Integer>> temp = new ArrayList<ArrayList<Integer>>();
+		for (Object ob:cageDomain.values()) {
+			temp.add((ArrayList<Integer>) ob);
+		}
+		
 		// traverse through the created search tree and add the previous values if there are any 
 		Node traverse = tree.getRoot(); 
 		
@@ -424,11 +471,26 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 
 		// go through and remove the possible values based on row
 		// can use the subList(int fromIndex, int toIndex) to get just the row
-
+		int rowNum = (int) Math.floor(cellNum/n);
+		int rowStart = rowNum * n + 1;
+		for (int i = rowStart; i < rowStart + n; i++) {
+			temp.get(i).remove(testValue);
+			if (temp.get(i).isEmpty()) {
+				return false;
+			}
+		}
 		
+				
 		// go through and remove the possible values based on column
 		// use the fact that the col index should be a difference of n from the index
 
+		int colStart = cellNum - rowStart + 1;
+		for (int i = colStart; i < n*n; i += n) {
+			temp.get(i).remove(testValue);
+			if (temp.get(i).isEmpty()) {
+				return false;
+			}
+		}
 		
 		// no need to go through and remove the possible values based on operation
 
