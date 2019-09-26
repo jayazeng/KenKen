@@ -21,8 +21,6 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 
 	String letter;  // cage letter from game board
 
-	int n; //size of the game board in one dimension
-
 	int cageTotal;  // total the cage is trying to equal to
 	
 	String nextCoord; // for the next coordinate used for 
@@ -33,32 +31,27 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 
 	int [][] solution,tempSol;  // this creates the matrix n x n
 	
-//	SearchTree tree;
-//	Node currentNode;
 	
 	//Constructor that takes InputFile
 	public AdvancedBackTrack(InputFile file) {
 		super(file);
 
-		input = file;
+		input = file;  // grabs the parsed dataFile
 
-		n = input.n; 
+		n = input.n; //assigns the dimension to n
 		
-		solution  = new int[n][n];
-		tempSol = new int[n][n];
+		solution  = new int[n][n];  // creates a solution array
+		tempSol = new int[n][n];  // creates a temporary solution array
 
-		preCheck(input);
+		preCheck(input);  // assigns domain values based on the total and the operator 
 		
-		// finds the single cages with ='s
-		findSingle();
+		findSingle();  // finds the single cages with ='s
 		
-		Hashtable<String,ArrayList<Object>> tempDomain = cageDomain;
+		Hashtable<String,ArrayList<Object>> tempDomain = cageDomain;  // creates hashtable to store temporary cageDomains
 		
-		nextCoord = findNextLowest(tempDomain);
+		nextCoord = findNextLowest(tempDomain);  // finds the most constrained cell
 		
-		forwardCheck(nextCoord, tempDomain);
-
-		System.out.print("hello");
+		forwardCheck(nextCoord, tempDomain); // forward checks 
 
 	}
 	
@@ -93,7 +86,7 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		int i;
 		int j;
 		String tmpCoord;
-		int mcv = n;
+		int mcv = n; 
 		int size = n;
 		String mcvCoord = null;
 		
@@ -105,9 +98,9 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 				
 				size = table.get(tmpCoord).size();  // checks the size of the coordinate
 				
-				String letter = input.cageLookup.get(tmpCoord);
+//				String letter = input.cageLookup.get(tmpCoord);
 				
-				String op = input.cages.get(letter).op;
+//				String op = input.cages.get(letter).op;
 				
 				if(mcv >=  size && mcv >= 1 && tempSol[i-1][j-1]==0) {  // ensures the value is lower than n, greater than 1 and not a size of 1
 				
@@ -299,8 +292,7 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		
 	}
 	
-
-	
+	// creates coordinate based on x and y
 	public String createCoord(int x, int y) {
 		
 		String ans = "("+x+","+ y + ")";
@@ -308,7 +300,7 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		return ans;
 	}
 	
-	
+	// parses x from coordinate
 	public int getX(String coord) {
 		
 		int x = Integer.parseInt(coord.substring(1,2));
@@ -317,6 +309,7 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		return x;
 	}
 	
+	// parses y from coordinate
 	public int getY(String coord) {
 		
 		int y = Integer.parseInt(coord.substring(3, 4));
@@ -325,6 +318,7 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 	}
 
 	
+	// takes an integer and creates a coordinate
 	public String reverseCoord(int k) {
 		
 		int q,r;
@@ -337,50 +331,62 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		
 	}
 	
-	
-	// Ced Forward Check
-	
-	// method uses the cageDomain and tmp variables to test if a testValue placed in a certain cell 
-	// will cause another cell further in the puzzle to not have a value
-	// if it does, then the method returns false and if it doesn't the method returns true
+	// forward checks which reduces values from other cells by row and column  
 	public boolean forwardCheck(String coord, Hashtable<String,ArrayList<Object>> tempDomain ) {
 
-		if(coord != null) {
+		if(coord == null) {
 			
-			
-			
+			return false;
+		}
 		
+		if(coord != null) {
 		
 		int x = getX(coord);
 		
-		int y = getY(coord);
+		int y = getY(coord); 
 		
-		int index = ((x - 1) * n) + y;
+		int indexSize = tempDomain.get(coord).size();
 		
-		// pick 0 index of cell 
+		for(int v = 0;v<indexSize;v++) {
 		
-		if(tempDomain.get(coord) != null) {
+		if(tempDomain.get(coord).get(v) != null) {
 		
-			tempSol[x-1][y-1] = (int) tempDomain.get(coord).get(0);
+			tempSol[x-1][y-1] = (int) tempDomain.get(coord).get(v);
 			
 			// eliminate rows and cols
 			cellReduction(coord, tempDomain);
 			
 			// input the next lowest cell urecursively till exhausted or failed
-			return forwardCheck(findNextLowest(tempDomain),tempDomain);
+			if(forwardCheck(findNextLowest(tempDomain),tempDomain)) {
+				
+				return true;
+			}
 
+		
+			
+			
 		}
 		
 		}
+		
+		}
+		
+		//  need to start again right here.
 		
 		System.out.println("Finished");
 		
 		return true;
 	}
 
+	// 
+	public boolean checkFormula() {
+		
+		
+		return false;
+		
+	}
+	
 
-	
-	
 	
 	// Janelle's ForwardCheck
 	// method uses the cageDomain and tmp variables to test if a testValue placed in a certain cell 

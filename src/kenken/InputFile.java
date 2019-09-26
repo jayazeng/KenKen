@@ -126,7 +126,7 @@ public class InputFile {
 			System.out.println(e.getMessage());
 			
 		}			
-			System.out.print("File Imported");
+			System.out.println("File Imported");
 		}  // end of constructor
 	
 	
