@@ -49,7 +49,7 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 
 		findSingle();  // finds the single cages with ='s
 
-		Hashtable<String,ArrayList<Object>> tempDomain = cageDomain;  // creates hashtable to store temporary cageDomains
+		//Hashtable<String,ArrayList<Object>> tempDomain = cageDomain;  // creates hashtable to store temporary cageDomains
 
 		//nextCoord = findNextLowest(tempDomain);  // finds the most constrained cell
 
@@ -348,7 +348,7 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 			int y = getY(coord); 
 
 			int indexSize = tempDomain.get(coord).size();
-
+			
 			for(int v = 0;v<indexSize;v++) {
 
 				if(tempDomain.get(coord).get(v) != null) {
@@ -397,74 +397,34 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		 * 
 		 */
 		while (tree.getDepth() <= n*n) { // keep it running until we get a solution
-			if (advBacktrack() != 0) { // check if there is a possible value
-				currentNode.addChild(advBacktrack()); // add the value into the tree
+			String coor = createCoord(getX(currentNode), getY(currentNode));
+			//ArrayList<Object> possibles = cageDomain.get(coor);
+			int value = advBacktrack();
+			if (value != 0) { // check if there is a possible value
+				currentNode.addChild(value); // add the value into the tree
 				nodesCreated++; // update how many nodes were created
 				currentNode = currentNode.getLastChild(); // switch the node and start looking for next value
 			} else { // otherwise go back up and start from the previous node
 				currentNode = currentNode.getParent();
 			}
+			//tree.printTree();
 		}
 
 	}
 
 	public int advBacktrack() {
+		String coor = createCoord(getX(currentNode), getY(currentNode));
+		ArrayList<Object> values = cageDomain.get(coor);
+		//forwardCheck(coor, temp);
 		int test = 1;
-		if (solution[getX(currentNode)][getY(currentNode)] != 0 && checkConstraints(solution[getX(currentNode)][getY(currentNode)])) {
-			return solution[getX(currentNode)][getY(currentNode)];
-		}
 		while (test <= n) {
-			if(checkConstraints(test) && checkPreviousValues(test)) { // checks to see if the value will work
+			if(values.contains(test) && checkConstraints(test) && checkPreviousValues(test)) { // checks to see if the value will work
 				return test;
 			}
 			test++; // try with another test value
 		}
 		return 0;
 	}
-
-	public boolean checkConstraints(int value) {
-		String coor = createCoord(getX(currentNode), getY(currentNode));
-		if (checkRow(value)) {
-			if (checkColumn(value)) {
-				if (checkOperation(value)) {
-					if (forwardCheck(coor, updateDomain(value))) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	public ArrayList<Integer> getValues() {
-
-		ArrayList<Integer> temp = new ArrayList<Integer>(n*n);
-		// traverse through the created search tree and add the previous values if there are any 
-		Node traverse = tree.getRoot(); 
-
-		while (traverse != currentNode || traverse.getLastChild() != null) {
-			temp.add(traverse.getLastChild().getValue());  //why are you changing the temp cageDomain which has less possible numbers?
-			traverse = traverse.getLastChild();
-		}
-		return temp;
-	}
-
-	public Hashtable<String,ArrayList<Object>> updateDomain(int testVal) {
-		Hashtable<String,ArrayList<Object>> temp = (Hashtable<String, ArrayList<Object>>) cageDomain.clone();
-		Node traverse = tree.getRoot(); 
-
-		while (traverse != currentNode && traverse.getLastChild() != null) {
-			String coor = createCoord(getX(traverse), getY(traverse));
-			ArrayList<Object> val = new ArrayList<Object>(1);
-			val.add(traverse.getLastChild().getValue());
-			temp.replace(coor, val);  //why are you changing the temp cageDomain which has less possible numbers?
-			traverse = traverse.getLastChild();
-		}
-		ArrayList<Object> val = new ArrayList<Object>(1);
-		val.add(testVal);
-		temp.replace(createCoord(getX(currentNode), getY(currentNode)), val);
-
-		return temp;
 
 		/*
 	// Janelle's ForwardCheck
@@ -537,7 +497,5 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		return true;
 	}
 		 */
-
-	}
 
 }  // end of class

@@ -49,6 +49,9 @@ public class SimpleBackTrack {
 
 	// this will check the parent's other children to see if you've tested the value before or not
 	public boolean checkPreviousValues(int test) {
+		if (currentNode == null) {
+			return false;
+		}
 		for (Node child: currentNode.getChildren()) {
 			if (child.getValue() == test) {
 				return false;
