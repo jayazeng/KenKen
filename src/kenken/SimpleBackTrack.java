@@ -112,7 +112,7 @@ public class SimpleBackTrack {
 	}
 
 	// check the row for the same number
-	private boolean checkRow(int value) {
+	public boolean checkRow(int value) {
 		Node traverse = currentNode;
 		for (int i = 1; i < getY(currentNode); i++) { // this will make the node only go back to the first cell of the row
 			if (traverse.getValue()  == value) {
@@ -128,7 +128,7 @@ public class SimpleBackTrack {
 	}
 
 	// check the column for the same number
-	private boolean checkColumn(int value) {
+	public boolean checkColumn(int value) {
 		int depth = tree.getDepthOfNode(currentNode) + 1;
 		depth -= n;
 		while (depth > 0) { // keep subtracting n from depth until it becomes a negative number to get all cells in column
@@ -141,7 +141,7 @@ public class SimpleBackTrack {
 	}
 
 	// check to see if values + op get the total needed once all areas are filled
-	private boolean checkOperation(int value) {
+	public boolean checkOperation(int value) {
 		//get partition of cell
 		String point = "("+ getX(currentNode)+ "," + getY(currentNode) + ")";
 		String lookup = input.cageLookup.get(point);

@@ -22,7 +22,7 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 	String letter;  // cage letter from game board
 
 	int cageTotal;  // total the cage is trying to equal to
-	
+
 	String nextCoord; // for the next coordinate used for 
 
 	ArrayList<Object> tmp; // temporary array
@@ -30,10 +30,10 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 	Hashtable<String,ArrayList<Object>> cageDomain = new Hashtable<String,ArrayList<Object>>(); //Collection - coordinate as key and set of numbers or Domain
 
 	int [][] solution,tempSol;  // this creates the matrix n x n
-	
+
 	int n; // size
-	
-	
+
+
 	//Constructor that takes InputFile
 	public AdvancedBackTrack(InputFile file) {
 		super(file);
@@ -41,94 +41,94 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		input = file;  // grabs the parsed dataFile
 
 		n = input.n; //assigns the dimension to n
-		
+
 		solution  = new int[n+1][n+1];  // creates a solution array
 		tempSol = new int[n+1][n+1];  // creates a temporary solution array
 
 		preCheck(input);  // assigns domain values based on the total and the operator 
-		
+
 		findSingle();  // finds the single cages with ='s
-		
+
 		Hashtable<String,ArrayList<Object>> tempDomain = cageDomain;  // creates hashtable to store temporary cageDomains
-		
+
 		//nextCoord = findNextLowest(tempDomain);  // finds the most constrained cell
-		
+
 		//forwardCheck(nextCoord, tempDomain); // forward checks 
 
 	}
-	
+
 	// Here's the method for finding the cage op
 	public void findSingle() {
 		for (Cage cage : input.cages.values()) {
 			if (cage.getOp().equals("=")) {
-				
+
 				int x  = cage.getLocalesX(0);
-				
+
 				int y = cage.getLocalesY(0);
-				
+
 				// put into solutions array
 				solution[x][y] = cage.getTotal();
 				tempSol[x][y] = solution[x][y];
 				// change cage operator from '=' into '$' to ignore when ran again
 				cage.setOp("$");
-				
+
 				String coord = "(" + x + "," + y + ")";
-				
+
 				cellReduction(coord,cageDomain);
 			} 	
-	
+
 		}
-		
+
 	}
-	
-	
+
+
 	// returns the coordinates for the smallest domain, other than single cells
 	public String findNextLowest(Hashtable<String,ArrayList<Object>> table) {  
-		
+
 		int i;
 		int j;
 		String tmpCoord;
 		int mcv = n; 
 		int size = n;
 		String mcvCoord = null;
-		
+
 		for(i=n;i >0 ;i--) {
-			
+
 			for(j= n; j >0; j--) {
-				
+
 				tmpCoord  = "("+i+","+j+")";  // assigns a temp coordinate
-				
+
 				size = table.get(tmpCoord).size();  // checks the size of the coordinate
-				
-//				String letter = input.cageLookup.get(tmpCoord);
-				
-//				String op = input.cages.get(letter).op;
-				
+
+				//				String letter = input.cageLookup.get(tmpCoord);
+
+				//				String op = input.cages.get(letter).op;
+
 				if(mcv >=  size && mcv >= 1 && tempSol[i][j]==0) {  // ensures the value is lower than n, greater than 1 and not a size of 1
-				
+
 					mcv = size;
-					
+
 					mcvCoord = tmpCoord;
-					
+
 				}
-				
+
 			}
-			
+
 		}
-		
+
 		System.out.println("Next lowest mcv is "+ mcvCoord + " at " + mcv + " coordinates");
-		
+
 		if(mcvCoord == null) {
-			
+
 			solution = tempSol;
-			
+
 			return null;
 		}
-		
-		
+
+
 		return mcvCoord;
 	}		
-				
+
 	// method takes the input which consist of the all the hashtables and game information
 	// from the InputFile class
 	public void preCheck(InputFile input) {
@@ -230,164 +230,164 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 			}}  //end of i & j loop
 
 
-		
+
 
 	} //end of preCheck
-	
-	
+
+
 	// input successful coordinate
 	public String cellReduction(String coord, Hashtable<String,ArrayList<Object>> table) {
-		
+
 		//get row and set row
 		int row = Integer.parseInt(coord.substring(1,2));
-		
+
 		//get col  and set col
 		int col= Integer.parseInt(coord.substring(3,4));
-		
+
 		// need to check if there is a number there
 		int value = (int) table.get(coord).get(0);
-		
+
 		int index;
-		
+
 		//remove value from col's domain
 		for(int r= 1;r<=n;r++) {
-			
+
 			String key = createCoord(r,col);
-			
+
 			if(!key.equals(coord) && tempSol[r][col]==0) {
-			
-			index = table.get(key).indexOf(value);
-			
-			if(index != -1) {
-			
-			table.get(key).remove(index);
-			
-			System.out.println("Removed " + value + " from domain at " + key);
+
+				index = table.get(key).indexOf(value);
+
+				if(index != -1) {
+
+					table.get(key).remove(index);
+
+					System.out.println("Removed " + value + " from domain at " + key);
+				}
+
 			}
-			
-		}
-		
-			
+
+
 		}
 		//remove value from row's domain
 		for(int c= 1;c<=n;c++) {
-			
+
 			String key = createCoord(row,c);
-			
+
 			if(!key.equals(coord) && tempSol[row][c]==0) {
-			
-			index = table.get(key).indexOf(value);
-			
-			if(index != -1) {
-			
-			table.get(key).remove(index);
-			
-			System.out.println("Removed " + value + " from domain at " + key);
-			
+
+				index = table.get(key).indexOf(value);
+
+				if(index != -1) {
+
+					table.get(key).remove(index);
+
+					System.out.println("Removed " + value + " from domain at " + key);
+
+				}
+
 			}
-			
+
 		}
-		
-		}
-		
+
 		return null;
-		
+
 	}
-	
+
 	// creates coordinate based on x and y
 	public String createCoord(int x, int y) {
-		
+
 		String ans = "("+x+","+ y + ")";
-		
+
 		return ans;
 	}
-	
+
 	// parses x from coordinate
 	public int getX(String coord) {
-		
+
 		int x = Integer.parseInt(coord.substring(1,2));
-		
-		
+
+
 		return x;
 	}
-	
+
 	// parses y from coordinate
 	public int getY(String coord) {
-		
+
 		int y = Integer.parseInt(coord.substring(3, 4));
-		
+
 		return y;
 	}
 
-	
+
 	// takes an integer and creates a coordinate
 	public String reverseCoord(int k) {
-		
+
 		int q,r;
-		
+
 		q = k/input.n;
-		
+
 		r = k%input.n;
-		
+
 		return createCoord(q,r);	
-		
+
 	}
-	
+
 	// forward checks which reduces values from other cells by row and column  
 	public boolean forwardCheck(String coord, Hashtable<String,ArrayList<Object>> tempDomain ) {
 
 		if(coord == null) {
-			
+
 			return false;
 		}
-		
+
 		if(coord != null) {
-		
-		int x = getX(coord);
-		
-		int y = getY(coord); 
-		
-		int indexSize = tempDomain.get(coord).size();
-		
-		for(int v = 0;v<indexSize;v++) {
-		
-		if(tempDomain.get(coord).get(v) != null) {
-		
-			tempSol[x-1][y-1] = (int) tempDomain.get(coord).get(v);
-			
-			// eliminate rows and cols
-			cellReduction(coord, tempDomain);
-			
-			// input the next lowest cell urecursively till exhausted or failed
-			if(forwardCheck(findNextLowest(tempDomain),tempDomain)) {
-				
-				return true;
+
+			int x = getX(coord);
+
+			int y = getY(coord); 
+
+			int indexSize = tempDomain.get(coord).size();
+
+			for(int v = 0;v<indexSize;v++) {
+
+				if(tempDomain.get(coord).get(v) != null) {
+
+					tempSol[x][y] = (int) tempDomain.get(coord).get(v);
+
+					// eliminate rows and cols
+					cellReduction(coord, tempDomain);
+
+					// input the next lowest cell urecursively till exhausted or failed
+					if(forwardCheck(findNextLowest(tempDomain),tempDomain)) {
+
+						return true;
+					}
+
+
+
+
+				}
+
 			}
 
-		
-			
-			
 		}
-		
-		}
-		
-		}
-		
+
 		//  need to start again right here.
-		
+
 		System.out.println("Finished");
-		
+
 		return true;
 	}
 
 	// 
 	public boolean checkFormula() {
-		
-		
+
+
 		return false;
-		
+
 	}
-	
+
 
 	public void trySearch() {
 		/*
@@ -397,8 +397,8 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		 * 
 		 */
 		while (tree.getDepth() <= n*n) { // keep it running until we get a solution
-			if (backtrack() != 0) { // check if there is a possible value
-				currentNode.addChild(backtrack()); // add the value into the tree
+			if (advBacktrack() != 0) { // check if there is a possible value
+				currentNode.addChild(advBacktrack()); // add the value into the tree
 				nodesCreated++; // update how many nodes were created
 				currentNode = currentNode.getLastChild(); // switch the node and start looking for next value
 			} else { // otherwise go back up and start from the previous node
@@ -407,9 +407,12 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		}
 
 	}
-	
+
 	public int advBacktrack() {
 		int test = 1;
+		if (solution[getX(currentNode)][getY(currentNode)] != 0 && checkConstraints(solution[getX(currentNode)][getY(currentNode)])) {
+			return solution[getX(currentNode)][getY(currentNode)];
+		}
 		while (test <= n) {
 			if(checkConstraints(test) && checkPreviousValues(test)) { // checks to see if the value will work
 				return test;
@@ -418,12 +421,13 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		}
 		return 0;
 	}
-	
+
 	public boolean checkConstraints(int value) {
-		if (forwardCheck2(value)) {
-			if (checkRow(value)) {
-				if (checkColumn(value)) {
-					if (checkOperation(value)) {
+		String coor = createCoord(getX(currentNode), getY(currentNode));
+		if (checkRow(value)) {
+			if (checkColumn(value)) {
+				if (checkOperation(value)) {
+					if (forwardCheck(coor, updateDomain(value))) {
 						return true;
 					}
 				}
@@ -431,6 +435,38 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		}
 		return false;
 	}
+
+	public ArrayList<Integer> getValues() {
+
+		ArrayList<Integer> temp = new ArrayList<Integer>(n*n);
+		// traverse through the created search tree and add the previous values if there are any 
+		Node traverse = tree.getRoot(); 
+
+		while (traverse != currentNode || traverse.getLastChild() != null) {
+			temp.add(traverse.getLastChild().getValue());  //why are you changing the temp cageDomain which has less possible numbers?
+			traverse = traverse.getLastChild();
+		}
+		return temp;
+	}
+
+	public Hashtable<String,ArrayList<Object>> updateDomain(int testVal) {
+		Hashtable<String,ArrayList<Object>> temp = (Hashtable<String, ArrayList<Object>>) cageDomain.clone();
+		Node traverse = tree.getRoot(); 
+
+		while (traverse != currentNode && traverse.getLastChild() != null) {
+			String coor = createCoord(getX(traverse), getY(traverse));
+			ArrayList<Object> val = new ArrayList<Object>(1);
+			val.add(traverse.getLastChild().getValue());
+			temp.replace(coor, val);  //why are you changing the temp cageDomain which has less possible numbers?
+			traverse = traverse.getLastChild();
+		}
+		ArrayList<Object> val = new ArrayList<Object>(1);
+		val.add(testVal);
+		temp.replace(createCoord(getX(currentNode), getY(currentNode)), val);
+
+		return temp;
+
+		/*
 	// Janelle's ForwardCheck
 	// method uses the cageDomain and tmp variables to test if a testValue placed in a certain cell 
 	// will cause another cell further in the puzzle to not have a value
@@ -438,20 +474,20 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 	@SuppressWarnings("unchecked")
 	public boolean forwardCheck2(int testValue) {
 
-		
+
 		// create a temporary array lists to list all possible values that can be updated in the method only
 		ArrayList<ArrayList<Integer>> temp = new ArrayList<ArrayList<Integer>>();
 		for (Object ob:cageDomain.values()) {
 			temp.add((ArrayList<Integer>) ob);
 		}
-		
+
 		// traverse through the created search tree and add the previous values if there are any 
 		Node traverse = tree.getRoot(); 
-		
+
 		// set index
 		int index = 0;
-		
-		
+
+
 		while (traverse != currentNode) {
 			temp.set(index, traverse.getLastChild().getValue());  //why are you changing the temp cageDomain which has less possible numbers?
 			traverse = traverse.getLastChild();
@@ -460,14 +496,14 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 
 		// this will get the cell number of the cell we are looking at
 		int cellNum = this.tree.getDepthOfNode(currentNode) + 1; 
-		
+
 		// set the testValue in the temp list and correct index, but since it's an arraylist and starts at 0, subtract 1 from the cellNum
 		temp.set(cellNum-1, testValue);
 
 		// now the temp array should contain single values to represent the cell values already chosen
 		// and list of possible values for cells not initialized yet
-		
-		
+
+
 
 		// go through and remove the possible values based on row
 		// can use the subList(int fromIndex, int toIndex) to get just the row
@@ -479,8 +515,8 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 				return false;
 			}
 		}
-		
-				
+
+
 		// go through and remove the possible values based on column
 		// use the fact that the col index should be a difference of n from the index
 
@@ -491,17 +527,17 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 				return false;
 			}
 		}
-		
+
 		// no need to go through and remove the possible values based on operation
 
-		
+
 		// check to see if any list is empty, and if it is return false
 		// else return true
-		
+
 		return true;
 	}
+		 */
 
-
-
+	}
 
 }  // end of class
