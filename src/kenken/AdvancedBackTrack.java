@@ -43,17 +43,13 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		n = input.n; //assigns the dimension to n
 
 		solution  = new int[n+1][n+1];  // creates a solution array
+		
 		tempSol = new int[n+1][n+1];  // creates a temporary solution array
 
 		preCheck(input);  // assigns domain values based on the total and the operator 
 
 		findSingle();  // finds the single cages with ='s
 
-		//Hashtable<String,ArrayList<Object>> tempDomain = cageDomain;  // creates hashtable to store temporary cageDomains
-
-		//nextCoord = findNextLowest(tempDomain);  // finds the most constrained cell
-
-		//forwardCheck(nextCoord, tempDomain); // forward checks 
 
 	}
 
@@ -100,9 +96,6 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 
 				size = table.get(tmpCoord).size();  // checks the size of the coordinate
 
-				//				String letter = input.cageLookup.get(tmpCoord);
-
-				//				String op = input.cages.get(letter).op;
 
 				if(mcv >=  size && mcv >= 1 && tempSol[i][j]==0) {  // ensures the value is lower than n, greater than 1 and not a size of 1
 
@@ -115,8 +108,6 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 			}
 
 		}
-
-		System.out.println("Next lowest mcv is "+ mcvCoord + " at " + mcv + " coordinates");
 
 		if(mcvCoord == null) {
 
@@ -262,7 +253,6 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 
 					table.get(key).remove(index);
 
-					System.out.println("Removed " + value + " from domain at " + key);
 				}
 
 			}
@@ -282,7 +272,6 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 
 					table.get(key).remove(index);
 
-					System.out.println("Removed " + value + " from domain at " + key);
 
 				}
 
@@ -358,13 +347,6 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 					// eliminate rows and cols
 					cellReduction(coord, tempDomain);
 
-					// input the next lowest cell urecursively till exhausted or failed
-//					if(forwardCheck(findNextLowest(tempDomain),tempDomain)) {
-//
-//						return true;
-//					}
-
-
 
 
 				}
@@ -375,7 +357,6 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 
 		//  need to start again right here.
 
-		System.out.println("Finished");
 
 		return true;
 	}
@@ -426,76 +407,5 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		return 0;
 	}
 
-		/*
-	// Janelle's ForwardCheck
-	// method uses the cageDomain and tmp variables to test if a testValue placed in a certain cell 
-	// will cause another cell further in the puzzle to not have a value
-	// if it does, then the method returns false and if it doesn't the method returns true
-	@SuppressWarnings("unchecked")
-	public boolean forwardCheck2(int testValue) {
-
-
-		// create a temporary array lists to list all possible values that can be updated in the method only
-		ArrayList<ArrayList<Integer>> temp = new ArrayList<ArrayList<Integer>>();
-		for (Object ob:cageDomain.values()) {
-			temp.add((ArrayList<Integer>) ob);
-		}
-
-		// traverse through the created search tree and add the previous values if there are any 
-		Node traverse = tree.getRoot(); 
-
-		// set index
-		int index = 0;
-
-
-		while (traverse != currentNode) {
-			temp.set(index, traverse.getLastChild().getValue());  //why are you changing the temp cageDomain which has less possible numbers?
-			traverse = traverse.getLastChild();
-			index++;
-		}
-
-		// this will get the cell number of the cell we are looking at
-		int cellNum = this.tree.getDepthOfNode(currentNode) + 1; 
-
-		// set the testValue in the temp list and correct index, but since it's an arraylist and starts at 0, subtract 1 from the cellNum
-		temp.set(cellNum-1, testValue);
-
-		// now the temp array should contain single values to represent the cell values already chosen
-		// and list of possible values for cells not initialized yet
-
-
-
-		// go through and remove the possible values based on row
-		// can use the subList(int fromIndex, int toIndex) to get just the row
-		int rowNum = (int) Math.floor(cellNum/n);
-		int rowStart = rowNum * n + 1;
-		for (int i = rowStart; i < rowStart + n; i++) {
-			temp.get(i).remove(testValue);
-			if (temp.get(i).isEmpty()) {
-				return false;
-			}
-		}
-
-
-		// go through and remove the possible values based on column
-		// use the fact that the col index should be a difference of n from the index
-
-		int colStart = cellNum - rowStart + 1;
-		for (int i = colStart; i < n*n; i += n) {
-			temp.get(i).remove(testValue);
-			if (temp.get(i).isEmpty()) {
-				return false;
-			}
-		}
-
-		// no need to go through and remove the possible values based on operation
-
-
-		// check to see if any list is empty, and if it is return false
-		// else return true
-
-		return true;
-	}
-		 */
-
+	
 }  // end of class
