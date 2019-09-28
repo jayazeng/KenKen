@@ -359,10 +359,10 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 					cellReduction(coord, tempDomain);
 
 					// input the next lowest cell urecursively till exhausted or failed
-					if(forwardCheck(findNextLowest(tempDomain),tempDomain)) {
-
-						return true;
-					}
+//					if(forwardCheck(findNextLowest(tempDomain),tempDomain)) {
+//
+//						return true;
+//					}
 
 
 
@@ -407,7 +407,7 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 			} else { // otherwise go back up and start from the previous node
 				currentNode = currentNode.getParent();
 			}
-			//tree.printTree();
+			tree.printTree();
 		}
 
 	}
