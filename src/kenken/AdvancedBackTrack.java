@@ -353,8 +353,6 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 		 * 
 		 */
 		while (tree.getDepth() <= n * n) { // keep it running until we get a solution
-			String coor = createCoord(getX(currentNode), getY(currentNode));
-			// ArrayList<Object> possibles = cageDomain.get(coor);
 			int value = advBacktrack();
 			if (value != 0) { // check if there is a possible value
 				currentNode.addChild(value); // add the value into the tree

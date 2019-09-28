@@ -65,27 +65,4 @@ public class ReadDataFile {
 		return numOfLines;
 
 	}
-
-	public static void main(String[] args) throws IOException {
-
-		String data_file = "./src/kenken.txt";
-
-		InputFile game = new InputFile(data_file);
-
-		SimpleBackTrack simple = new SimpleBackTrack(game);
-		
-		simple.trySearch();
-		simple.printSolution();
-
-		AdvancedBackTrack adv = new AdvancedBackTrack(game);
-
-		adv.trySearch();
-		adv.printSolution();
-		
-		LocalSearch local = new LocalSearch(game);
-		
-		local.trySearch();
-		local.printSolution();
-
-	}
 }

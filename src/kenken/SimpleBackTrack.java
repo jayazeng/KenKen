@@ -73,6 +73,9 @@ public class SimpleBackTrack {
 			}
 			System.out.println();
 		}
+	}
+
+	public void printNumNodes() {
 		// print the number of nodes created
 		System.out.println(nodesCreated);
 	}
@@ -119,7 +122,7 @@ public class SimpleBackTrack {
 	public boolean checkRow(int value) {
 		Node traverse = currentNode;
 		for (int i = 1; i < getY(currentNode); i++) { // this will make the node only go back to the first cell of the
-														// row
+			// row
 			if (traverse.getValue() == value) {
 				return false;
 			}
@@ -137,7 +140,7 @@ public class SimpleBackTrack {
 		int depth = tree.getDepthOfNode(currentNode) + 1;
 		depth -= n;
 		while (depth > 0) { // keep subtracting n from depth until it becomes a negative number to get all
-							// cells in column
+			// cells in column
 			if (tree.getNodeAtDepth(depth).getValue() == value) {
 				return false;
 			}

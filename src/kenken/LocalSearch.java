@@ -132,7 +132,14 @@ public class LocalSearch {
 			}
 			System.out.println();
 		}
-		System.out.println(iterations);
+	}
+	
+	public void printNumNodes() {
+		if (iterations == 100000) {
+			System.out.println("Reached 100000 iterations and did not solve");
+		} else {
+			System.out.println(iterations);
+		}
 	}
 
 	// Check to see if puzzle is completed
@@ -217,7 +224,7 @@ public class LocalSearch {
 
 			int val = finalSolution[otherX][otherY]; // val of point listed in cage
 			if (val != 0) { // if value has been declared in solution run the code, otherwise it doesn't
-							// matter
+				// matter
 				if (cage.getOp().equals("+")) { // if addition
 					actualTotal += val;
 				} else if (cage.getOp().equals("*")) { // if multiplication
@@ -236,7 +243,7 @@ public class LocalSearch {
 			}
 		}
 		if (actualTotal > opTotal) { // check if actual total will be greater than expected total and update
-										// violations
+			// violations
 			toReturn++;
 		}
 		return toReturn; // this will return number of violations
