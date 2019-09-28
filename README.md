@@ -31,4 +31,5 @@ Input for puzzle will give the size of the puzzle, the partitioning of the puzzl
 
 Output for puzzle should be the solutions and the number of nodes/iterations for the each of the solutions.
 
-How to run code:
+How to run code: 
+Please run the code using the main method in submission. Change the data_file string to the path of the input file of the puzzle. There should already be an InputFile called game which will take the information from the file and convert it for our code's purpose. The three algorithms should also be created with the separate classes: SimpleBackTrack, AdvancedBackTrack and LocalSearch. Each class has three methods that should be used. trySearch() will test the alorithm, printSolution() will print the solution the algorithm comes to, and printNumNodes() will print the number of nodes/iterations the algorithm uses to get to final solution or fail (in the case of local search)
