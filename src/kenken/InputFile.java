@@ -143,7 +143,6 @@ public class InputFile {
 			System.out.println(e.getMessage());
 
 		}
-		System.out.println("File Imported");
 	} // end of constructor
 
 	private String[][] makeArray(int n) { // makes the n ArrayList by initializing ArrayList with n

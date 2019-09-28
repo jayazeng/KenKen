@@ -68,19 +68,24 @@ public class ReadDataFile {
 
 	public static void main(String[] args) throws IOException {
 
-		String data_file = "./src/kenken9x9.txt";
+		String data_file = "./src/kenken.txt";
 
 		InputFile game = new InputFile(data_file);
 
-//		SimpleBackTrack sol2 = new SimpleBackTrack(game);
-//		
-//		sol2.trySearch();
-//		sol2.printSolution();
+		SimpleBackTrack simple = new SimpleBackTrack(game);
+		
+		simple.trySearch();
+		simple.printSolution();
 
-		AdvancedBackTrack sol = new AdvancedBackTrack(game);
+		AdvancedBackTrack adv = new AdvancedBackTrack(game);
 
-		sol.trySearch();
-		sol.printSolution();
+		adv.trySearch();
+		adv.printSolution();
+		
+		LocalSearch local = new LocalSearch(game);
+		
+		local.trySearch();
+		local.printSolution();
 
 	}
 }

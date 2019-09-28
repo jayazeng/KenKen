@@ -65,7 +65,7 @@ public class LocalSearch {
 	// LocalSearch Method
 	public boolean trySearch() {
 		initial();
-		for (iterations = 0; iterations < 10000; iterations++) { // Runs 1000000 iterations before stopping
+		for (iterations = 0; iterations < 100000; iterations++) { // Runs 1000000 iterations before stopping
 
 			// get random 2 cells and swap them
 			int x1 = getRandom();
@@ -125,6 +125,7 @@ public class LocalSearch {
 
 	// Printing Solution from LocalSearch
 	public void printSolution() {
+		System.out.println();
 		for (int x = 1; x <= n; x++) {
 			for (int y = 1; y <= n; y++) {
 				System.out.print(finalSolution[x][y] + " ");

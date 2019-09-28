@@ -363,7 +363,6 @@ public class AdvancedBackTrack extends SimpleBackTrack {
 			} else { // otherwise go back up and start from the previous node
 				currentNode = currentNode.getParent();
 			}
-			tree.printTree();
 		}
 
 	}
