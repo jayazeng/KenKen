@@ -31,7 +31,7 @@
 
 
 package kenken;
-import java.util.ArrayList;
+import java.util.Hashtable;
 public class LocalSearch {
 	private int[][] finalSolution; //2D int array to hold the solution
 	int n; //length and width of array
@@ -43,9 +43,7 @@ public class LocalSearch {
 		input = file;
 		n = file.n;
 		finalSolution = new int[n+1][n+1];
-
 	}
-
 
 	/*Brainstorm on creating LocalSearch Loop
 	 *  
@@ -63,76 +61,66 @@ public class LocalSearch {
 	 *  
 	 */
 
+	public int getIterations() {
+		return iterations;
+	}
+	
 	//LocalSearch Method
-	public boolean search() {
+	public boolean trySearch() {
 		initial();
 		for (iterations = 0; iterations < 10000; iterations++) { //Runs 1000000 iterations before stopping
-			//inner loop goes here
-
-			// check how many violations there are total and then when that equals 0 return true?
-
+			
 			//get random 2 cells and swap them
-
 			int x1 = getRandom();
 			int y1 = getRandom();
-			
-			// Maybe find the cell with the most constraints and try to start from there
-			/*
-			if (mostViolations() != null) {
-				String point = mostViolations();
-				x1 = Integer.parseInt(point.substring(0, 1));
-				y1 = Integer.parseInt(point.substring(n-1));
-			}
-			*/
 
 			int x2 = getRandom();
 			int y2 = getRandom();
-			
-			// Maybe find the best possible swap that can happen
-			/*
-			if (possibleSwap(finalSolution[x1][y1], checkConstraints(finalSolution[x1][y1], x1, y1)) != null) {
-				String swapPoint = possibleSwap(finalSolution[x1][y1], checkConstraints(finalSolution[x1][y1], x1, y1));
-				x2 = Integer.parseInt(swapPoint.substring(0, 1));
-				y2 = Integer.parseInt(swapPoint.substring(n-1));
-			}
-			*/
-			
+
 			int originalViolations = checkConstraints(finalSolution[x1][y1], x1, y1) + checkConstraints(finalSolution[x2][y2], x2, y2);
 			int newViolations = checkConstraints(finalSolution[x2][y2], x1, y1) + checkConstraints(finalSolution[x1][y1], x2, y2);
-			
 			if (newViolations < originalViolations) {
 				int swap = finalSolution[x1][y1];
 				finalSolution[x1][y1] = finalSolution[x2][y2];
-				finalSolution[x2][y2] = swap; 
-			} else {
-				iterations--;
+				finalSolution[x2][y2] = swap;
+				
 			}
-			if (completed()) {
-				break;
+			if (checkTotalConstraints() == 0) {
+				return true;
 			}
-
+			// Random restarts
+			if (Math.random() < 0.05 && checkTotalConstraints() > n*n) {
+				initial();
+			}
 		}
 		return false;
 	}
 
-	// create a random integer
+	// create a random integer in the range 1-n
 	public int getRandom() {
 		int random = (int) (Math.random() * ((n))) + 1;
 		return random;
 	}
+	
 	// populating solution with random integers
-
 	public void initial() {
-		ArrayList<Integer> values = new ArrayList<Integer>(n);
+		// create a table to track how many times the a value is put into puzzle
+		Hashtable<Integer, Integer>  appearances = new Hashtable<Integer, Integer>(n);
 		for (int val = 1; val <= n; val++) {
-			values.add(val);
+			appearances.put(val, 0);
 		}
+		//place a random value (1-n) into the array
 		for (int x = 1; x <= n; x++) {
 			for (int y = 1; y <= n; y++) {
-				finalSolution[x][y] = values.get(y-1);
+				while (finalSolution[x][y] == 0) { // make sure to put the correct number of numbers
+					int value = getRandom();
+					int times = appearances.get(value);
+					if (appearances.get(value) < n) {
+						finalSolution[x][y] = value;
+						appearances.replace(value, times+1); // update appearances of values
+					}
+				}
 			}
-			values.add(0,values.get(n-1));
-			values.remove(n);
 		}
 	}
 
@@ -159,39 +147,26 @@ public class LocalSearch {
 		return true;
 	}
 
-	// returns the point with the most violations
-	public String mostViolations() {
-		String point = null;
-		int violations = 0;
-		for (int x = 1; x <= n; x++) {
-			for (int y = 1; y <= n; y++) {
-				if (checkConstraints(finalSolution[x][y], x, y) > violations ) {
-					point = x+"." + y;
-					violations = checkConstraints(finalSolution[x][y],x,y);
-				}
-			}
-		}
-		return point;
-	}
-
-	public String possibleSwap(int test, int violations) {
-		String point = null;
-		for (int x = 1; x <= n; x++) {
-			for (int y = 1; y <= n; y++) {
-				if (checkConstraints(test, x, y) < violations ) {
-					point = x+"." + y;
-					return point;
-				}
-			}
-		}
-		return point;
-	}
 	//Constraint Method (should be same as BackTrack) - VIOLATIONS OF CONSTRAINTS 
 	protected int checkConstraints(int value, int x, int y) {
 		int violations = 0;
 		violations += checkRow(x,y,value);
 		violations += checkColumn(x,y,value);
 		violations += checkOperations(x,y,value);
+		return violations;
+	}
+
+	//Constraint Method (checks total constraints in array)
+	protected int checkTotalConstraints() {
+		int violations = 0;
+		for (int x = 1; x <= n; x++) {
+			for (int y = 1; y <= n; y++) {
+				int value = finalSolution[x][y];
+				violations += checkRow(x,y,value);
+				violations += checkColumn(x,y,value);
+				violations += checkOperations(x,y,value);
+			}
+		}
 		return violations;
 	}
 
@@ -205,6 +180,7 @@ public class LocalSearch {
 		}
 		return toReturn;
 	}
+	
 	//CONSTRAINT 2 - check each column for now repeated number
 	private int checkColumn(int x, int y, int value) {
 		int toReturn = 0;
@@ -215,6 +191,7 @@ public class LocalSearch {
 		}
 		return toReturn;
 	}
+	
 	//CONSTRAINT 3 - check each partition to see if it satisfies mathematical expression 
 	private int checkOperations(int x, int y, int value) {
 		int toReturn = 0;
@@ -234,10 +211,7 @@ public class LocalSearch {
 		}
 		for (int index = 0; index < cage.locales.size(); index++) { //test all points of the cage
 
-			//			int otherX = (int) cage.locales.get(index).getX(); //get x for final array
 			int otherX = (int) cage.getLocalesX(index); //get x for final array  *** Ced's Version
-
-			//			int otherY = (int) cage.locales.get(index).getY(); //get y for final array
 			int otherY = (int) cage.getLocalesY(index); //get y for final array   **** Ced's Version
 
 			int val = finalSolution[otherX][otherY]; //val of point listed in cage
@@ -264,20 +238,5 @@ public class LocalSearch {
 		}
 		return toReturn; //this will return number of violations
 	}
-
-
-	public int getIterations() {
-		return iterations;
-	}
-
-
-
-
-
-
-
-
-
-
 }
 
