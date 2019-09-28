@@ -18,10 +18,10 @@ public class ReadDataFile {
 
 	public ReadDataFile(String dataFilePath) {
 
-		dataPath=dataFilePath;
+		dataPath = dataFilePath;
 	}
 
-	public String[] OpenFile() throws IOException{
+	public String[] OpenFile() throws IOException {
 
 		FileReader fr = new FileReader(dataPath);
 
@@ -33,7 +33,7 @@ public class ReadDataFile {
 
 		int i;
 
-		for(i=0; i<numOfLines; i++) {
+		for (i = 0; i < numOfLines; i++) {
 
 			textData[i] = textReader.readLine();
 		}
@@ -44,7 +44,7 @@ public class ReadDataFile {
 
 	}
 
-	int readLines() throws IOException{
+	int readLines() throws IOException {
 
 		FileReader file_to_read = new FileReader(dataPath);
 
@@ -66,9 +66,6 @@ public class ReadDataFile {
 
 	}
 
-
-
-
 	public static void main(String[] args) throws IOException {
 
 		String data_file = "./src/kenken9x9.txt";
@@ -79,7 +76,7 @@ public class ReadDataFile {
 //		
 //		sol2.trySearch();
 //		sol2.printSolution();
-		
+
 		AdvancedBackTrack sol = new AdvancedBackTrack(game);
 
 		sol.trySearch();

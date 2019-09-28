@@ -1,4 +1,5 @@
 package kenken;
+
 /*
  * This class creates a n-ary tree that stores nodes
  * 
@@ -10,8 +11,9 @@ public class SearchTree {
 		root = new Node(n);
 		root.setParent(null);
 	}
-	
-	//get height of search tree and when that is equal to n*n, we've found all the values
+
+	// get height of search tree and when that is equal to n*n, we've found all the
+	// values
 	public int getDepth() {
 		Node traverse = this.root;
 		int depth = 0;
@@ -35,8 +37,9 @@ public class SearchTree {
 		}
 		return depth;
 	}
-	
-	// function used to get a specific node at a depth or say that it hasn't been declared yet
+
+	// function used to get a specific node at a depth or say that it hasn't been
+	// declared yet
 	public Node getNodeAtDepth(int depth) {
 		Node traverse = this.root;
 		for (int i = 0; i < depth; i++) {
@@ -47,10 +50,10 @@ public class SearchTree {
 		}
 		return traverse;
 	}
-	
+
 	public void printTree() {
 		Node traverse = this.root;
-		while (traverse.getLastChild()!=null) {
+		while (traverse.getLastChild() != null) {
 			System.out.print(traverse.getLastChild().getValue() + " ");
 			traverse = traverse.getLastChild();
 		}

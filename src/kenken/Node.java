@@ -12,6 +12,7 @@ public class Node {
 		children = new ArrayList<Node>(n);
 		this.n = n;
 	}
+
 	// if passes constraints, add a child node
 	public void addChild(int value) {
 		Node child = new Node(this.n);
@@ -19,14 +20,15 @@ public class Node {
 		child.parent = this;
 		this.children.add(child);
 	}
-	
+
 	public void setParent(Node parent) {
 		this.parent = parent;
 	}
-	
+
 	public Node getParent() {
 		return this.parent;
 	}
+
 	// get all children
 	public ArrayList<Node> getChildren() {
 		return this.children;
