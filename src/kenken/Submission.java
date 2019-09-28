@@ -20,6 +20,7 @@ public class Submission {
 		local.trySearch();
 		
 		simple.printSolution();
+		System.out.println();
 		simple.printNumNodes();
 		adv.printNumNodes();
 		local.printNumNodes();
