@@ -7,7 +7,7 @@ public class Submission {
 	public static void main(String[] args) throws IOException {
 
 		// Please input name of input file
-		String data_file = "./src/kenken.txt";
+		String data_file = "./src/kenken9x9.txt";
 
 		InputFile game = new InputFile(data_file);
 
